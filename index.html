@@ -574,24 +574,10 @@ async function loadFeeds(){
     }
   }catch(e){console.log('[phi] pre-verified load fail',e)}
 
-  // Then fresh RSS in waves
-  const WAVE=20;
-  let loaded=0;
-  for(let w=0;w<SRC.length;w+=WAVE){
-    const batch=SRC.slice(w,w+WAVE);
-    const results=await Promise.allSettled(batch.map(src=>fetchRSS(src)));
-    results.forEach(r=>{
-      if(r.status==='fulfilled'&&r.value.length>0){
-        articles=articles.concat(r.value);
-      }
-    });
-    dedup();
-    loaded+=batch.length;
-    renderFeed();renderCats();
-    const dot=document.getElementById('dot');
-    if(loaded>=SRC.length){dot.innerHTML='&#x25CF; live';dot.style.color='var(--g)';saveCache()}
-    else{dot.textContent=loaded+'/'+SRC.length;dot.style.color='var(--a)'}
-  }
+  // RSS is handled server-side by cron — no client-side fetching needed
+  const dot=document.getElementById('dot');
+  dot.innerHTML='&#x25CF; live';dot.style.color='var(--g)';
+  saveCache();
   renderSrc();
 }
 
