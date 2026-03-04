@@ -622,15 +622,16 @@
       </div>
     </div>
 
-    <!-- SOURCE RSS STATUS (span 3) -->
+    <!-- LIVE CONTENT BY TAB (span 3) -->
     <div class="section-card span3">
       <div class="section-hdr">
-        <span class="section-title">rss feed health</span>
-        <span class="section-badge" id="rss-badge">checking</span>
+        <span class="section-title">content by tab · live</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--txm)" id="tab-last-refresh">—</span>
+          <span class="section-badge" id="rss-badge">loading</span>
+        </div>
       </div>
-      <div class="section-body" id="rss-panel" style="max-height:320px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 24px">
-        <div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
-        <div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+      <div class="section-body" id="rss-panel" style="max-height:420px;overflow-y:auto">
         <div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
       </div>
     </div>
@@ -859,72 +860,94 @@ async function fetchQueue() {
   }
 }
 
-// ── RSS HEALTH CHECK ──
+// ── LIVE TAB CONTENT COUNTER ──
+// Tracks article counts per tab, last article time, growth since monitor opened
+const tabBaseline = {}; // tab -> count at page load
+const TAB_COLORS = {
+  news:'#e8845a', nature:'#6abca0', science:'#5a9abc', health:'#bc5a8a',
+  music:'#d4a54a', comedy:'#8abc5a', art:'#bc6a9a', hobbies:'#9a7ebc',
+  outdoors:'#5a8a3a', consciousness:'#9a7ebc', tech:'#5abcb0',
+  finance:'#bcb05a', gaming:'#bc6a5a', sports:'#d4001f', holometry:'#b896d6'
+};
+const TAB_ORDER = ['news','science','health','nature','music','comedy','art','hobbies','outdoors','consciousness','tech','finance','gaming','sports','holometry'];
+
 async function checkRSS() {
   const panel = document.getElementById('rss-panel');
   const badge = document.getElementById('rss-badge');
-  badge.textContent = 'checking...';
+  const refreshEl = document.getElementById('tab-last-refresh');
 
-  // Sample 15 sources (don't hammer all 161)
-  const sample = [
-    {id:'propublica',n:'ProPublica',cat:'news'},
-    {id:'quanta',n:'Quanta',cat:'science'},
-    {id:'theonion',n:'The Onion',cat:'comedy'},
-    {id:'huberman',n:'Huberman Lab',cat:'health'},
-    {id:'hyperallergic',n:'Hyperallergic',cat:'art'},
-    {id:'wolfstreet',n:'Wolf Street',cat:'finance'},
-    {id:'terrytao',n:'Terence Tao',cat:'holometry'},
-    {id:'bandcamp',n:'Bandcamp Daily',cat:'music'},
-    {id:'cgpgrey',n:'CGP Grey',cat:'science'},
-    {id:'hankgreen',n:'Hank Green',cat:'science'},
-    {id:'billburr',n:'Bill Burr MMP',cat:'comedy'},
-    {id:'vspehar',n:'Under Desk News',cat:'news'},
-    {id:'soulboom',n:'Soul Boom',cat:'consciousness'},
-    {id:'kotaku',n:'Kotaku',cat:'gaming'},
-    {id:'nickofferman',n:'Nick Offerman',cat:'hobbies'},
-  ];
+  try {
+    const r = await fetch(BASE + '/api/articles?limit=2000', {signal: AbortSignal.timeout(10000)});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    const arts = data.articles || [];
 
-  const results = await Promise.all(sample.map(async src => {
-    try {
-      const url = BASE + '/api/rss?src=' + src.id;
-      const r = await fetch(url, {signal: AbortSignal.timeout(8000)});
-      if(!r.ok) return {...src, status:'err', detail:'HTTP '+r.status};
-      const txt = await r.text();
-      if(!txt || txt.length < 50) return {...src, status:'warn', detail:'empty response'};
-      // Check for XML items
-      const itemCount = (txt.match(/<item>/gi)||[]).length + (txt.match(/<entry>/gi)||[]).length;
-      if(itemCount > 0) return {...src, status:'ok', detail:itemCount+' items'};
-      if(txt.includes('<rss') || txt.includes('<feed')) return {...src, status:'warn', detail:'feed empty'};
-      return {...src, status:'warn', detail:'unexpected format'};
-    } catch(e) {
-      return {...src, status:'err', detail:e.message.slice(0,30)};
-    }
-  }));
+    // Group by cat
+    const byCat = {};
+    const lastArt = {};
+    arts.forEach(a => {
+      const cat = a.cat || 'unknown';
+      byCat[cat] = (byCat[cat] || 0) + 1;
+      if(!lastArt[cat] || a.ts > lastArt[cat]) lastArt[cat] = a.ts;
+    });
 
-  const ok = results.filter(r=>r.status==='ok').length;
-  const warn = results.filter(r=>r.status==='warn').length;
-  const err = results.filter(r=>r.status==='err').length;
-  badge.textContent = `${ok} ok · ${warn} warn · ${err} err`;
+    // Set baseline on first load
+    TAB_ORDER.forEach(tab => {
+      if(tabBaseline[tab] === undefined) tabBaseline[tab] = byCat[tab] || 0;
+    });
 
-  // Render in 3 columns
-  const cols = [[], [], []];
-  results.forEach((r, i) => cols[i % 3].push(r));
-  
-  panel.style.display = 'grid';
-  panel.style.gridTemplateColumns = '1fr 1fr 1fr';
-  panel.style.gap = '0 24px';
-  panel.innerHTML = cols.map(col => `
-    <div>${col.map(r => `
-      <div class="status-row">
-        <span class="status-name">${escHtml(r.n)}</span>
-        <span class="status-cat">${r.cat}</span>
-        <span class="status-pill ${r.status}">${r.status === 'ok' ? r.detail : r.status === 'warn' ? '⚠ '+r.detail : '✕ '+r.detail}</span>
+    const total = arts.length;
+    badge.textContent = total.toLocaleString() + ' total articles';
+    refreshEl.textContent = 'updated ' + new Date().toLocaleTimeString();
+
+    // Build table
+    panel.innerHTML = `
+      <div style="display:grid;grid-template-columns:140px 1fr 80px 80px 80px;gap:0;margin-bottom:8px;padding:0 0 8px;border-bottom:1px solid var(--bd)">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase">tab</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase">volume</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase;text-align:right">articles</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase;text-align:right">+new</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase;text-align:right">last</span>
       </div>
-    `).join('')}</div>
-  `).join('');
+      ${TAB_ORDER.map(tab => {
+        const count = byCat[tab] || 0;
+        const baseline = tabBaseline[tab] || 0;
+        const gained = count - baseline;
+        const pct = total ? Math.round(count / total * 100) : 0;
+        const color = TAB_COLORS[tab] || '#888';
+        const lastTs = lastArt[tab];
+        const lastStr = lastTs ? ago(lastTs) : '—';
+        const isEmpty = count === 0;
+        return `
+          <div style="display:grid;grid-template-columns:140px 1fr 80px 80px 80px;gap:0;padding:9px 0;border-bottom:1px solid var(--bd);align-items:center">
+            <span style="font-family:var(--mono);font-size:11px;color:${isEmpty ? 'var(--txd)' : color};letter-spacing:.06em;text-transform:uppercase">${tab}</span>
+            <div style="padding-right:20px">
+              <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+                <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;transition:width .6s ease;opacity:${isEmpty ? '.3' : '.8'}"></div>
+              </div>
+            </div>
+            <span style="font-family:var(--mono);font-size:12px;color:${isEmpty ? 'var(--txd)' : 'var(--tx)'};text-align:right">${count.toLocaleString()}</span>
+            <span style="font-family:var(--mono);font-size:11px;color:${gained > 0 ? 'var(--g)' : 'var(--txd)'};text-align:right">${gained > 0 ? '+'+gained : '—'}</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--txm);text-align:right">${lastStr}</span>
+          </div>`;
+      }).join('')}
+      <div style="padding:12px 0 4px;display:grid;grid-template-columns:140px 1fr 80px 80px 80px">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--txm)">total</span>
+        <span></span>
+        <span style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--a);text-align:right">${total.toLocaleString()}</span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--g);text-align:right">${Object.values(tabBaseline).reduce((a,b)=>a+b,0) < total ? '+' + (total - Object.values(tabBaseline).reduce((a,b)=>a+b,0)) : '—'}</span>
+        <span></span>
+      </div>
+    `;
 
-  return { ok: ok === sample.length };
+    return { ok: true };
+  } catch(e) {
+    panel.innerHTML = `<div class="err-msg">could not load article counts: ${escHtml(e.message)}</div>`;
+    badge.textContent = 'error';
+    return { ok: false };
+  }
 }
+
 
 // ── ENDPOINTS HEALTH ──
 async function checkEndpoints() {
@@ -1076,37 +1099,25 @@ async function fcFindImages() {
   btn.disabled = true;
   section.style.display = 'block';
   grid.innerHTML = '<div style="grid-column:span 4;font-family:var(--mono);font-size:10px;color:var(--txm)">searching for photos of '+escHtml(fcState.source.n)+'...</div>';
-
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch(BASE + '/api/photos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{
-          role: 'user',
-          content: `Find 4 real, publicly accessible photo URLs of "${fcState.source.n}". Search their official website, Wikipedia, Substack, YouTube channel, or major press coverage. Return ONLY a JSON array of exactly 4 image URLs — direct image links ending in .jpg, .jpeg, .png, or .webp. No explanation, no markdown. Format: ["url1","url2","url3","url4"]`
-        }]
-      })
+      body: JSON.stringify({ name: fcState.source.n })
     });
     const data = await r.json();
-    let txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-    const match = txt.match(/\[[\s\S]*?\]/);
-    const urls = match ? JSON.parse(match[0]).filter(u => typeof u === 'string' && u.startsWith('http')) : [];
-
+    if (!r.ok) throw new Error(data.error || 'search failed');
+    const urls = data.urls || [];
     if (!urls.length) throw new Error('no images found');
-
     grid.innerHTML = urls.slice(0, 4).map((url, i) => `
-      <div onclick="fcPickImage('${url.replace(/'/g,"\\'")}', this)" style="cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid transparent;transition:border-color .15s" data-idx="${i}">
-        <img src="${escHtml(url)}" style="width:100%;height:90px;object-fit:cover;object-position:center top;display:block;background:var(--bg3)" 
+      <div onclick="fcPickImage('${url.replace(/'/g,"\'")}", this)" style="cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid transparent;transition:border-color .15s">
+        <img src="${escHtml(url)}" style="width:100%;height:90px;object-fit:cover;object-position:center top;display:block;background:var(--bg3)"
              onerror="this.parentElement.style.opacity='.3';this.parentElement.style.pointerEvents='none'">
       </div>
     `).join('');
   } catch(e) {
-    grid.innerHTML = `<div style="grid-column:span 4;font-family:var(--mono);font-size:10px;color:var(--r)">Could not find photos: ${escHtml(e.message)}. You can paste an image URL manually below.</div>
-    <div style="grid-column:span 4;margin-top:8px"><input id="fc-manual-url" placeholder="paste image URL..." style="width:100%;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:5px;padding:8px;font-family:var(--mono);font-size:10px" oninput="fcPickImage(this.value)"></div>`;
+    grid.innerHTML = `<div style="grid-column:span 4;font-family:var(--mono);font-size:10px;color:var(--r)">Could not find photos: ${escHtml(e.message)}</div>
+    <div style="grid-column:span 4;margin-top:8px"><input id="fc-manual-url" placeholder="paste image URL manually..." style="width:100%;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:5px;padding:8px;font-family:var(--mono);font-size:10px;outline:none" oninput="fcPickImage(this.value)"></div>`;
   }
   btn.textContent = 'find photos →';
   btn.disabled = false;
@@ -1114,10 +1125,8 @@ async function fcFindImages() {
 
 function fcPickImage(url, el) {
   fcState.imageUrl = url;
-  // Highlight selected
   document.querySelectorAll('#fc-img-grid > div').forEach(d => d.style.borderColor = 'transparent');
   if (el) el.style.borderColor = 'var(--a)';
-  // Update preview
   fcUpdatePreview();
 }
 
@@ -1129,28 +1138,15 @@ async function fcGenerateBio() {
   btn.disabled = true;
   status.textContent = 'asking claude...';
   status.style.color = 'var(--b)';
-
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch(BASE + '/api/bio', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{
-          role: 'user',
-          content: `Write a 2-3 sentence bio of ${fcState.source.n} for Phiable's ${fcState.source.cat} feed. 
-
-Phiable follows people who think deeply, speak honestly, and show up for their communities. Base the bio ONLY on what ${fcState.source.n} has actually and publicly demonstrated — specific work, specific stances, specific community. Do not use words like "passionate", "dedicated", "inspiring", or "thought leader". Do not flatter. Write like you are telling a friend why this person is worth following. 
-
-Search for real, specific things they have done. Then write the bio. Return ONLY the bio text, no labels, no quotes around it.`
-        }]
-      })
+      body: JSON.stringify({ name: fcState.source.n, tab: fcState.source.cat })
     });
     const data = await r.json();
-    const txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
-    document.getElementById('fc-bio-text').value = txt;
+    if (!r.ok) throw new Error(data.error || 'bio generation failed');
+    document.getElementById('fc-bio-text').value = data.bio;
     status.textContent = 'generated · edit freely before saving';
     status.style.color = 'var(--g)';
     fcUpdatePreview();
