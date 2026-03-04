@@ -25,12 +25,12 @@ const SOURCES = {
   // NATURE
   outside:          { url: 'https://www.outsideonline.com/feed/', cat: 'nature' },
   trailrunner:      { url: 'https://www.trailrunnermag.com/feed/', cat: 'nature' },
-  adventurejournal: { url: 'https://www.adventure-journal.com/feed/', cat: 'nature' },
+  advjournal: { url: 'https://www.adventure-journal.com/feed/', cat: 'nature' },
   northspore:       { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC1IFVMqMSbqnMEBBRkVsgOA', cat: 'nature' },
-  fungiperfecti:    { url: 'https://fungi.com/blogs/fungi-perfecti.atom', cat: 'nature' },
-  fungifoundation:  { url: 'https://www.ffungi.org/blog?format=rss', cat: 'nature' },
+  ffungi:    { url: 'https://fungi.com/blogs/fungi-perfecti.atom', cat: 'nature' },
+  ffungi:  { url: 'https://www.ffungi.org/blog?format=rss', cat: 'nature' },
   nama:             { url: 'https://namyco.org/feed/', cat: 'nature' },
-  mushroomhour:     { url: 'https://mushroomhour.substack.com/feed', cat: 'nature' },
+  northspore_blog:     { url: 'https://mushroomhour.substack.com/feed', cat: 'nature' },
   // SCIENCE
   quanta:           { url: 'https://api.quantamagazine.org/feed/', cat: 'science' },
   veritasium:       { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA', cat: 'science' },
@@ -38,18 +38,18 @@ const SOURCES = {
   sabine:           { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC1yNl2E66ZzKApQdRuTQ4tw', cat: 'science' },
   toe:              { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCddiUEpeqJcYeBxX1IVBKvQ', cat: 'science' },
   carroll:          { url: 'https://www.preposterousuniverse.com/podcast/feed/podcast/', cat: 'science' },
-  physicsworld:     { url: 'https://physicsworld.com/feed/', cat: 'science' },
-  startswithabang:  { url: 'https://bigthink.com/starts-with-a-bang/feed/', cat: 'science' },
+  physworld:     { url: 'https://physicsworld.com/feed/', cat: 'science' },
+  siegel:  { url: 'https://bigthink.com/starts-with-a-bang/feed/', cat: 'science' },
   // HEALTH
   statnews:         { url: 'https://www.statnews.com/feed/', cat: 'health' },
-  retractionwatch:  { url: 'https://retractionwatch.com/feed/', cat: 'health' },
+  retraction:  { url: 'https://retractionwatch.com/feed/', cat: 'health' },
   // MUSIC
   beato:            { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCJquYOG5EL82sKTfH9aMA9Q', cat: 'music' },
-  tetragrammaton:   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCfk49Grfln4BkQfqlbPMRuQ', cat: 'music' },
+  rubin:   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCfk49Grfln4BkQfqlbPMRuQ', cat: 'music' },
   hypebot:          { url: 'https://www.hypebot.com/feed/', cat: 'music' },
   bandcamp:         { url: 'https://daily.bandcamp.com/feed', cat: 'music' },
-  digitalmusicnews: { url: 'https://www.digitalmusicnews.com/feed/', cat: 'music' },
-  soundonsound:     { url: 'https://www.soundonsound.com/feed/all', cat: 'music' },
+  dmn: { url: 'https://www.digitalmusicnews.com/feed/', cat: 'music' },
+  sos:     { url: 'https://www.soundonsound.com/feed/all', cat: 'music' },
   reverb:           { url: 'https://reverb.com/news/feed', cat: 'music' },
   // HOBBIES
   bonsaitonight:    { url: 'https://bonsaitonight.com/feed/', cat: 'hobbies' },
@@ -59,14 +59,14 @@ const SOURCES = {
   electrek:         { url: 'https://electrek.co/feed/', cat: 'hobbies' },
   surronster:       { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCqBz3SVpb0er5iLIrGNBYcA', cat: 'hobbies' },
   ebr:              { url: 'https://electricbikereview.com/feed/', cat: 'hobbies' },
-  micromobility:    { url: 'https://micromobility.io/feed', cat: 'hobbies' },
+  micromob:    { url: 'https://micromobility.io/feed', cat: 'hobbies' },
   surron:           { url: 'https://www.surron.com/blogs/news.atom', cat: 'hobbies' },
   // CONSCIOUSNESS
   doubleblind:      { url: 'https://doubleblindmag.com/feed/', cat: 'consciousness' },
   maps:             { url: 'https://maps.org/feed/', cat: 'consciousness' },
   thirdwave:        { url: 'https://thethirdwave.co/feed/', cat: 'consciousness' },
   chacruna:         { url: 'https://chacruna.net/feed/', cat: 'consciousness' },
-  stamets:          { url: 'https://paulstamets.substack.com/feed', cat: 'consciousness' },
+  stamets_sub:      { url: 'https://paulstamets.substack.com/feed', cat: 'consciousness' },
   // GAMING
   minecraft:        { url: 'https://www.minecraft.net/en-us/feeds/community-content/rss', cat: 'gaming' },
   xisuma:           { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCU9pX8hKcrx06XfOB-VQLdw', cat: 'gaming' },
@@ -90,7 +90,7 @@ const SOURCES = {
   // HOLOMETRY
   '3b1b':           { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw', cat: 'holometry' },
   numberphile:      { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCoxcjq-8xIDTYp3uz647V5A', cat: 'holometry' },
-  quantamath:       { url: 'https://api.quantamagazine.org/feed/?tags=mathematics', cat: 'holometry' },
+  quanta_math:       { url: 'https://api.quantamagazine.org/feed/?tags=mathematics', cat: 'holometry' },
 };
 
 function withTimeout(promise, ms, label) {
@@ -159,7 +159,7 @@ Return ONLY valid JSON, no markdown:
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }]
       })
