@@ -727,7 +727,7 @@ function renderFeed(){
     var q=searchTerm;
     var verifiedMatches=articles.filter(function(a){return a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q))});
     var unverifiedMatches=articles.filter(function(a){return !a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q))});
-    var html='';
+    html='';
     if(verifiedMatches.length){
       html+='<div class="tier-header"><span class="tier-label tier-free">&#x2713; VERIFIED &mdash; FREE</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="free">?</button></div>';
       html+='<div class="tier-desc">These stories have been verified by Phiable. Three independent sources forced a conclusion.</div>';
