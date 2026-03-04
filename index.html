@@ -306,21 +306,32 @@ const SRC=[
   {id:"quanta_math",n:"Quanta Math",c:"#b896d6",cat:"holometry",rss:"/api/rss?src=quanta_math"},
 ];
 
+window.verifyById=function(id){var a=articles.find(function(x){return x.id===id});if(a)verify(a)};
 // === TIER INFO ===
 window.showTierInfo=function(type){
-  const msgs={
-    free:{title:'Verified — Free',body:'These articles have been processed by Phiable\'s three-angle verification engine. Three independent sources were searched. Where they agreed, a conclusion was forced. Like a fourth circle in the Descartes theorem. This verification was paid for by Phiable as an investment in independent journalism.'},
-    unverified:{title:'Unverified — Help Fund This Story',body:'These stories have not yet been verified. When you verify a story, a portion of the fee goes directly to the independent journalists and creators who reported it. Phiable is a marketplace where truth has value and the people who produce it get paid. Every verification funds the creator economy.'}
+  var titles={free:"Verified - Free",unverified:"Unverified - Help Fund This Story"};
+  var bodies={
+    free:"These articles have been processed by Phiable's three-angle verification engine. Three independent sources were searched. Where they agreed, a conclusion was forced. Like a fourth circle in the Descartes theorem. This verification was paid for by Phiable as an investment in independent journalism.",
+    unverified:"These stories have not yet been verified. When you verify a story, a portion of the fee goes directly to the independent journalists and creators who reported it. Phiable is a marketplace where truth has value and the people who produce it get paid. Every verification funds the creator economy."
   };
-  const m=msgs[type];if(!m)return;
-  const modal=document.createElement('div');
+  if(!titles[type])return;
+  var modal=document.createElement('div');
   modal.style.cssText='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:24px';
-  modal.innerHTML='<div style="background:var(--s2);border-radius:16px;padding:24px;max-width:360px;width:100%">'
-    +'<div style="font-size:16px;font-weight:600;margin-bottom:12px;color:var(--t1)">'+m.title+'</div>'
-    +'<div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px">'+m.body+'</div>'
-    +'<button onclick="this.closest('div[style*=fixed]').remove()" style="width:100%;padding:12px;border-radius:12px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:600;cursor:pointer">Got it</button>'
-    +'</div>';
-  modal.onclick=e=>{if(e.target===modal)modal.remove()};
+  var inner=document.createElement('div');
+  inner.style.cssText='background:var(--s2);border-radius:16px;padding:24px;max-width:360px;width:100%';
+  var titleEl=document.createElement('div');
+  titleEl.style.cssText='font-size:16px;font-weight:600;margin-bottom:12px;color:var(--t1)';
+  titleEl.textContent=titles[type];
+  var bodyEl=document.createElement('div');
+  bodyEl.style.cssText='font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px';
+  bodyEl.textContent=bodies[type];
+  var btn=document.createElement('button');
+  btn.style.cssText='width:100%;padding:12px;border-radius:12px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:600;cursor:pointer';
+  btn.textContent='Got it';
+  btn.onclick=function(){modal.remove()};
+  inner.appendChild(titleEl);inner.appendChild(bodyEl);inner.appendChild(btn);
+  modal.appendChild(inner);
+  modal.onclick=function(e){if(e.target===modal)modal.remove()};
   document.body.appendChild(modal);
 };
 const CP=["Primary documents authenticated","Financial records verified","Multiple sources corroborate","Timeline confirmed via metadata","Public records cross-referenced","Worker accounts verified","Geolocation confirmed","Technical claims verified"];
@@ -713,34 +724,37 @@ function renderFeed(){
     el.innerHTML='<div class="ld"><svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" stroke="#d4a54a" stroke-width="2" fill="none" stroke-dasharray="80" stroke-dashoffset="20" stroke-linecap="round"/></svg><div>Loading feeds...</div></div>';return}
 
   if(!pool.length&&searchTerm){
-    // Show two-tier search results: verified matches + unverified prompt
-    const q=searchTerm;
-    const verifiedMatches=articles.filter(a=>a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q)));
-    const unverifiedMatches=articles.filter(a=>!a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q)));
-    let html='';
+    var q=searchTerm;
+    var verifiedMatches=articles.filter(function(a){return a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q))});
+    var unverifiedMatches=articles.filter(function(a){return !a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q))});
+    var html='';
     if(verifiedMatches.length){
-      html+='<div class="tier-header"><span class="tier-label tier-free">✓ VERIFIED — FREE</span>'
-        +'<button class="tier-info" onclick="showTierInfo('free')">?</button></div>'
-        +'<div class="tier-desc">These stories have been verified by Phiable. Three independent sources forced a conclusion.</div>';
-      verifiedMatches.forEach(a=>{
-        html+='<div class="ac" onclick="openDet(''+a.id+'')"><div class="ac-meta" style="padding:12px 0"><div style="display:flex;align-items:center;gap:8px"><span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span><span style="font-size:8px;color:var(--g)">&#x2713;</span></div><h3>'+a.ti+'</h3></div></div>';
+      html+='<div class="tier-header"><span class="tier-label tier-free">&#x2713; VERIFIED &mdash; FREE</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="free">?</button></div>';
+      html+='<div class="tier-desc">These stories have been verified by Phiable. Three independent sources forced a conclusion.</div>';
+      verifiedMatches.forEach(function(a){
+        html+='<div class="ac" onclick="openDet(this.dataset.id)" data-id="'+a.id+'">';
+        html+='<div class="ac-meta" style="padding:12px 0">';
+        html+='<div style="display:flex;align-items:center;gap:8px">';
+        html+='<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>';
+        html+='<span style="font-size:8px;color:var(--g)">&#x2713;</span></div>';
+        html+='<h3>'+a.ti+'</h3></div></div>';
       });
     }
     if(unverifiedMatches.length){
-      html+='<div class="tier-header" style="margin-top:16px"><span class="tier-label tier-unverified">UNVERIFIED</span>'
-        +'<button class="tier-info" onclick="showTierInfo('unverified')">?</button></div>'
-        +'<div class="tier-desc">These stories are in the feed but not yet verified. Verifying funds the journalists who reported them.</div>';
-      unverifiedMatches.forEach(a=>{
-        html+='<div class="ac ac-unverified"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span><h3 style="opacity:.5">'+a.ti+'</h3></div>'
-          +'<button class="verify-btn" onclick="event.stopPropagation();verify(articles.find(x=>x.id===''+a.id+''))">VERIFY & FUND</button></div>';
+      html+='<div class="tier-header" style="margin-top:16px"><span class="tier-label tier-unverified">UNVERIFIED</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="unverified">?</button></div>';
+      html+='<div class="tier-desc">These stories are in the feed but not yet verified. Verifying funds the journalists who reported them.</div>';
+      unverifiedMatches.forEach(function(a){
+        html+='<div class="ac ac-unverified">';
+        html+='<div class="ac-meta" style="padding:12px 0">';
+        html+='<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>';
+        html+='<h3 style="opacity:.5">'+a.ti+'</h3></div>';
+        html+='<button class="verify-btn" onclick="event.stopPropagation();verifyById(this.dataset.id)" data-id="'+a.id+'">VERIFY &amp; FUND</button></div>';
       });
     }
     if(!verifiedMatches.length&&!unverifiedMatches.length){
-      html='<div class="tier-header"><span class="tier-label tier-unverified">UNVERIFIED</span>'
-        +'<button class="tier-info" onclick="showTierInfo('unverified')">?</button></div>'
-        +'<div class="tier-desc">Not in our feed yet. Verifying this funds independent journalism.</div>'
-        +'<div class="ac ac-unverified" onclick="document.getElementById('ui').value=''+q.replace(/'/g,"\'")+''"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:var(--a);background:var(--a)14">Web Search</span><h3 style="opacity:.5">'+q+'</h3></div>'
-        +'<button class="verify-btn" onclick="event.stopPropagation();runVeriphi()">VERIFY & FUND</button></div>';
+      html='<div class="tier-header"><span class="tier-label tier-unverified">UNVERIFIED</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="unverified">?</button></div>';
+      html+='<div class="tier-desc">Not in our feed yet. Verifying this funds independent journalism.</div>';
+      html+='<div class="ac ac-unverified"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:var(--a);background:rgba(212,165,74,.08)">Web Search</span><h3 style="opacity:.5">'+q+'</h3></div><button class="verify-btn" onclick="event.stopPropagation();runVeriphi()">VERIFY &amp; FUND</button></div>';
     }
     el.innerHTML=html;return;
   }
