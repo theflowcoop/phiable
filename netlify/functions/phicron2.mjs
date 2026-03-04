@@ -401,4 +401,4 @@ export default async (req, context) => {
   return new Response(summary, { status: 200 });
 };
 
-export const config = { schedule: '*/10 * * * *' };
+export const config = { schedule: '* * * * *' };
