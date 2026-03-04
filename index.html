@@ -268,6 +268,12 @@ const SRC=[
   {id:"physworld",n:"Physics World",c:"#6a8abc",cat:"science",rss:"/api/rss?src=physworld"},
   {id:"siegel",n:"Starts With a Bang",c:"#bc6a8a",cat:"science",rss:"/api/rss?src=siegel"},
   // HEALTH
+  {id:"medscape",n:"Medscape",c:"#3a7abc",cat:"health",rss:"/api/rss?src=medscape"},
+  {id:"nih_news",n:"NIH News",c:"#5a3abc",cat:"health",rss:"/api/rss?src=nih_news"},
+  {id:"who_news",n:"WHO News",c:"#bc3a3a",cat:"health",rss:"/api/rss?src=who_news"},
+  {id:"cdc_news",n:"CDC",c:"#3abc5a",cat:"health",rss:"/api/rss?src=cdc_news"},
+  {id:"nejm",n:"NEJM",c:"#bc8a3a",cat:"health",rss:"/api/rss?src=nejm"},
+  {id:"medxiv",n:"medRxiv",c:"#8a3abc",cat:"health",rss:"/api/rss?src=medxiv"},
   {id:"statnews",n:"STAT News",c:"#bc5a8a",cat:"health",rss:"/api/rss?src=statnews"},
   {id:"retraction",n:"Retraction Watch",c:"#c45c4a",cat:"health",rss:"/api/rss?src=retraction"},
   // MUSIC
@@ -376,6 +382,8 @@ function blockKey(ts){return Math.floor(ts/108e5)}
 
 // === STATE ===
 let articles=[],selA=null,view='feed',feedPage=0,ITEMS_PER_PAGE=20,searchTerm='',pendingFileText=null;
+const catScrollPos={};
+const catFeedPage={};
 function backendKey(title,sourceId){let h=0;const s=title+'|'+sourceId+'|';for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return'v'+Math.abs(h)}
 let verifiedCache={};
 
@@ -400,10 +408,16 @@ function matchCat(a,catId){
 }
 
 function setCat(id){
+  // Save current scroll position
+  const fl=document.getElementById('fl');
+  catScrollPos[activeCat]=fl.scrollTop;
+  catFeedPage[activeCat]=feedPage;
   activeCat=id;
-  feedPage=0;
+  feedPage=catFeedPage[id]||0;
   renderCats();
   renderFeed();
+  // Restore scroll position for this cat
+  requestAnimationFrame(()=>{fl.scrollTop=catScrollPos[id]||0});
   // Scroll tabs to show active
   const tab=document.querySelector('.ct.on');
   if(tab)tab.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});

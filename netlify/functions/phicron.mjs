@@ -58,6 +58,12 @@ const SOURCES = {
   siegel:  { url: 'https://bigthink.com/starts-with-a-bang/feed/', cat: 'science' },
   // HEALTH
   statnews:         { url: 'https://www.statnews.com/feed/', cat: 'health' },
+  medscape:         { url: 'https://www.medscape.com/rss/news', cat: 'health' },
+  nih_news:         { url: 'https://www.nih.gov/news-events/feed.xml', cat: 'health' },
+  who_news:         { url: 'https://www.who.int/rss-feeds/news-english.xml', cat: 'health' },
+  cdc_news:         { url: 'https://tools.cdc.gov/api/v2/resources/media/403372.rss', cat: 'health' },
+  nejm:             { url: 'https://www.nejm.org/action/showFeed?type=etoc&feed=rss&jc=nejm', cat: 'health' },
+  medxiv:           { url: 'https://connect.medrxiv.org/trends/rss/topic/public_health_emergency_of_int.xml', cat: 'health' },
   retraction:  { url: 'https://retractionwatch.com/feed/', cat: 'health' },
   // MUSIC
   beato:            { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCJquYOG5EL82sKTfH9aMA9Q', cat: 'music' },
@@ -311,4 +317,4 @@ export default async (req, context) => {
   return new Response(summary, { status: 200 });
 };
 
-export const config = { schedule: '* * * * *' };
+export const config = { schedule: '*/10 * * * *' };
