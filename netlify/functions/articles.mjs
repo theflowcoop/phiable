@@ -1,19 +1,9 @@
-// articles.mjs - Serve pre-verified articles (ES module)
-// GET → returns all verified articles from the index
-
+// articles.mjs - Serve pre-verified articles (Netlify Functions v2)
 import { getStore } from "@netlify/blobs";
 
-export const handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-    'Cache-Control': 'public, max-age=300'
-  };
-
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers };
-  if (event.httpMethod !== 'GET') return { statusCode: 405, headers, body: JSON.stringify({ error: 'GET only' }) };
-
+export default async (req, context) => {
+  const url = new URL(req.url);
+  
   try {
     const store = getStore("articles");
     let index;
@@ -22,21 +12,28 @@ export const handler = async (event) => {
     } catch (e) { index = null; }
 
     if (!index || !index.articles || !index.articles.length) {
-      return { statusCode: 200, headers, body: JSON.stringify({ articles: [], count: 0 }) };
+      return new Response(JSON.stringify({ articles: [], count: 0 }), {
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
-    const cat = event.queryStringParameters?.cat;
+    const cat = url.searchParams.get("cat");
     let articles = index.articles;
-    if (cat && cat !== 'all') {
+    if (cat && cat !== "all") {
       articles = articles.filter(a => a.cat === cat);
     }
 
-    const limit = parseInt(event.queryStringParameters?.limit) || 200;
+    const limit = parseInt(url.searchParams.get("limit")) || 200;
     articles = articles.slice(0, limit);
 
-    return { statusCode: 200, headers,
-      body: JSON.stringify({ articles, count: articles.length, total: index.articles.length, updated: index.updated }) };
+    return new Response(JSON.stringify({ articles, count: articles.length, total: index.articles.length, updated: index.updated }), {
+      headers: { "Content-Type": "application/json" }
+    });
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500, headers: { "Content-Type": "application/json" }
+    });
   }
 };
+
+export const config = { path: "/api/articles" };

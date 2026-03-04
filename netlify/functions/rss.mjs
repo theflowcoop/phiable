@@ -1,5 +1,4 @@
-// rss.mjs - RSS proxy (ES module)
-// Proxies RSS/Atom feeds to avoid CORS issues
+// rss.mjs - RSS proxy (Netlify Functions v2)
 
 const SOURCES = {
   // NEWS
@@ -67,38 +66,41 @@ const SOURCES = {
   quantamath:{url:'https://api.quantamagazine.org/feed/?tags=mathematics',cat:'holometry'},
 };
 
-export const handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/xml',
-    'Cache-Control': 'public, max-age=900'
-  };
+export default async (req, context) => {
+  const url = new URL(req.url);
+  const src = url.searchParams.get("src");
 
-  const src = event.queryStringParameters?.src;
-
-  // Catalog endpoint
-  if (src === 'catalog') {
+  if (src === "catalog") {
     const catalog = Object.entries(SOURCES).map(([id, s]) => ({
       id, url: s.url, cat: s.cat, cats: s.cats || [s.cat]
     }));
-    return { statusCode: 200, headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify(catalog) };
+    return new Response(JSON.stringify(catalog), {
+      headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=900" }
+    });
   }
 
   if (!src || !SOURCES[src]) {
-    return { statusCode: 400, headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Unknown source', available: Object.keys(SOURCES) }) };
+    return new Response(JSON.stringify({ error: "Unknown source", available: Object.keys(SOURCES) }), {
+      status: 400, headers: { "Content-Type": "application/json" }
+    });
   }
 
   try {
     const r = await fetch(SOURCES[src].url, {
-      headers: { 'User-Agent': 'Phiable/2.0 (news verification; phiable.netlify.app)' }
+      headers: { "User-Agent": "Phiable/2.0 (news verification; phiable.netlify.app)" }
     });
-    if (!r.ok) return { statusCode: r.status, headers, body: `<error>HTTP ${r.status}</error>` };
+    if (!r.ok) return new Response(`<e>HTTP ${r.status}</e>`, {
+      status: r.status, headers: { "Content-Type": "application/xml" }
+    });
     const xml = await r.text();
-    return { statusCode: 200, headers, body: xml };
+    return new Response(xml, {
+      headers: { "Content-Type": "application/xml", "Cache-Control": "public, max-age=900" }
+    });
   } catch (e) {
-    return { statusCode: 500, headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: e.message }) };
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500, headers: { "Content-Type": "application/json" }
+    });
   }
 };
+
+export const config = { path: "/api/rss" };
