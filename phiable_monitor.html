@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>phiable monitor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0e0d0b;
+    --bg2: #161513;
+    --bg3: #1e1c18;
+    --bd: rgba(255,255,255,.06);
+    --a: #d4a54a;
+    --a2: #e8c070;
+    --g: #7ebc6a;
+    --r: #c45c4a;
+    --b: #5a9abc;
+    --tx: #e8e0d0;
+    --txm: #8a7e6a;
+    --txd: #4a4030;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--tx);
+    font-family: var(--sans);
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  /* GRID LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo-text {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--a);
+    letter-spacing: .05em;
+  }
+
+  .logo-sub {
+    font-size: 9px;
+    color: var(--txm);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    margin-top: 1px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txm);
+    letter-spacing: .1em;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--txd);
+    transition: background .3s;
+  }
+
+  .live-dot.ok { background: var(--g); animation: pulse 2s infinite; }
+  .live-dot.warn { background: var(--a); }
+  .live-dot.err { background: var(--r); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+
+  .refresh-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txm);
+    background: none;
+    border: 1px solid var(--bd);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: .08em;
+    transition: all .15s;
+  }
+
+  .refresh-btn:hover { color: var(--a); border-color: rgba(212,165,74,.3); }
+
+  .last-check {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--txd);
+    letter-spacing: .08em;
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 16px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* STAT CARDS */
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent, var(--bd));
+    opacity: .6;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--txm);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--accent, var(--tx));
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--txm);
+    font-family: var(--mono);
+  }
+
+  .stat-delta {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .stat-delta.up { background: rgba(126,188,106,.12); color: var(--g); }
+  .stat-delta.dn { background: rgba(196,92,74,.12); color: var(--r); }
+  .stat-delta.neu { background: rgba(212,165,74,.1); color: var(--a); }
+
+  /* SECTION CARD */
+  .section-card {
+    background: var(--bg2);
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .section-card.span2 { grid-column: span 2; }
+  .section-card.span3 { grid-column: span 3; }
+
+  .section-hdr {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg3);
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txm);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+
+  .section-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--txm);
+    border: 1px solid var(--bd);
+  }
+
+  .section-body {
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  /* STATUS ROW */
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bd);
+    gap: 8px;
+  }
+
+  .status-row:last-child { border-bottom: none; }
+
+  .status-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .status-cat {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--txd);
+    width: 80px;
+    text-align: right;
+    letter-spacing: .06em;
+  }
+
+  .status-pill {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+    min-width: 52px;
+    text-align: center;
+  }
+
+  .status-pill.ok { background: rgba(126,188,106,.12); color: var(--g); }
+  .status-pill.warn { background: rgba(212,165,74,.1); color: var(--a); }
+  .status-pill.err { background: rgba(196,92,74,.1); color: var(--r); }
+  .status-pill.pending { background: rgba(90,154,188,.1); color: var(--b); }
+  .status-pill.unchecked { background: rgba(255,255,255,.04); color: var(--txd); }
+
+  /* ARTICLE LIST */
+  .art-row {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bd);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .art-row:last-child { border-bottom: none; }
+
+  .art-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .art-title {
+    font-size: 12px;
+    color: var(--tx);
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .art-meta {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--txm);
+    white-space: nowrap;
+  }
+
+  .art-verified {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--g);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* QUEUE TABLE */
+  .queue-row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .queue-row:last-child { border-bottom: none; }
+
+  .queue-key {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--b);
+    width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .queue-title {
+    flex: 1;
+    font-size: 11px;
+    color: var(--txm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .queue-age {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--txd);
+    white-space: nowrap;
+  }
+
+  /* PROGRESS BAR */
+  .prog-wrap {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .prog-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .prog-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx);
+  }
+
+  .prog-pct {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txm);
+  }
+
+  .prog-bar {
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width .6s ease;
+  }
+
+  /* LOADING SKELETON */
+  .skel {
+    height: 12px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--bg3) 25%, var(--bg2) 50%, var(--bg3) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    margin-bottom: 8px;
+  }
+
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* ERROR STATE */
+  .err-msg {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--r);
+    padding: 12px;
+    background: rgba(196,92,74,.05);
+    border-radius: 4px;
+    border: 1px solid rgba(196,92,74,.15);
+    line-height: 1.6;
+  }
+
+  .empty-msg {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txd);
+    padding: 20px;
+    text-align: center;
+    letter-spacing: .1em;
+  }
+
+  /* CRON LOG */
+  .log-line {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txm);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    gap: 10px;
+    line-height: 1.4;
+  }
+
+  .log-line:last-child { border-bottom: none; }
+
+  .log-ts {
+    color: var(--txd);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .log-msg { flex: 1; }
+
+  .log-line.ok .log-msg { color: var(--g); }
+  .log-line.warn .log-msg { color: var(--a); }
+  .log-line.err .log-msg { color: var(--r); }
+
+  /* MINI CHART */
+  .sparkline {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 32px;
+    padding-top: 4px;
+  }
+
+  .spark-bar {
+    flex: 1;
+    border-radius: 1px 1px 0 0;
+    min-height: 2px;
+    transition: height .3s;
+    opacity: .7;
+  }
+
+  /* CONFIG BOX */
+  .cfg-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .cfg-row:last-child { border-bottom: none; }
+
+  .cfg-key {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txm);
+  }
+
+  .cfg-val {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--a);
+  }
+
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr 1fr; }
+    .section-card.span3 { grid-column: span 2; }
+  }
+
+  @media (max-width: 600px) {
+    .main { grid-template-columns: 1fr; padding: 12px; }
+    .section-card.span2, .section-card.span3 { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <header>
+    <div class="logo-row">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
+        <ellipse cx="20" cy="20" rx="11" ry="15" stroke="#d4a54a" stroke-width="2.2" fill="none"/>
+        <line x1="20" y1="4" x2="20" y2="36" stroke="#d4a54a" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="logo-text">phiable monitor</div>
+        <div class="logo-sub">system health</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="last-check" id="last-check">—</div>
+      <div class="live-badge">
+        <div class="live-dot" id="live-dot"></div>
+        <span id="live-label">connecting</span>
+      </div>
+      <button class="refresh-btn" onclick="runAll()">↺ refresh</button>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- STAT: Articles -->
+    <div class="stat-card" style="--accent: var(--g)">
+      <div class="stat-label">verified articles</div>
+      <div class="stat-value" id="stat-articles" style="color:var(--g)">—</div>
+      <div class="stat-sub" id="stat-articles-sub">loading...</div>
+    </div>
+
+    <!-- STAT: Queue -->
+    <div class="stat-card" style="--accent: var(--b)">
+      <div class="stat-label">queue depth</div>
+      <div class="stat-value" id="stat-queue" style="color:var(--b)">—</div>
+      <div class="stat-sub" id="stat-queue-sub">items awaiting deep verify</div>
+    </div>
+
+    <!-- STAT: Sources -->
+    <div class="stat-card" style="--accent: var(--a)">
+      <div class="stat-label">sources active</div>
+      <div class="stat-value" id="stat-sources" style="color:var(--a)">161</div>
+      <div class="stat-sub" id="stat-sources-sub">rss feeds configured</div>
+      <div class="stat-delta neu" id="stat-sources-delta">—</div>
+    </div>
+
+    <!-- RECENT ARTICLES (span 2) -->
+    <div class="section-card span2">
+      <div class="section-hdr">
+        <span class="section-title">recent articles</span>
+        <span class="section-badge" id="art-count-badge">—</span>
+      </div>
+      <div class="section-body" id="articles-panel" style="max-height:340px">
+        <div class="skel" style="width:90%"></div>
+        <div class="skel" style="width:70%"></div>
+        <div class="skel" style="width:85%"></div>
+        <div class="skel" style="width:65%"></div>
+        <div class="skel" style="width:80%"></div>
+      </div>
+    </div>
+
+    <!-- SYSTEM STATUS -->
+    <div class="section-card">
+      <div class="section-hdr">
+        <span class="section-title">endpoints</span>
+        <span class="section-badge" id="endpoints-badge">checking</span>
+      </div>
+      <div class="section-body" id="endpoints-panel">
+        <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+      </div>
+    </div>
+
+    <!-- VERIFICATION QUEUE (span 2) -->
+    <div class="section-card span2">
+      <div class="section-hdr">
+        <span class="section-title">worker queue</span>
+        <span class="section-badge" id="queue-badge">—</span>
+      </div>
+      <div class="section-body" id="queue-panel" style="max-height:260px">
+        <div class="skel" style="width:95%"></div>
+        <div class="skel" style="width:75%"></div>
+        <div class="skel" style="width:88%"></div>
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="section-card">
+      <div class="section-hdr">
+        <span class="section-title">by category</span>
+        <span class="section-badge" id="cats-badge">—</span>
+      </div>
+      <div class="section-body" id="cats-panel" style="max-height:260px">
+        <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+      </div>
+    </div>
+
+    <!-- SOURCE RSS STATUS (span 3) -->
+    <div class="section-card span3">
+      <div class="section-hdr">
+        <span class="section-title">rss feed health</span>
+        <span class="section-badge" id="rss-badge">checking</span>
+      </div>
+      <div class="section-body" id="rss-panel" style="max-height:320px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 24px">
+        <div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+        <div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+        <div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+      </div>
+    </div>
+
+    <!-- FEATURED CONTRIBUTORS (span 3) -->
+    <div class="section-card span3" style="border-color:rgba(212,165,74,.2)">
+      <div class="section-hdr" style="background:rgba(212,165,74,.06)">
+        <span class="section-title" style="color:var(--a)">featured contributors</span>
+        <span class="section-badge" id="fc-badge" style="color:var(--a);border-color:rgba(212,165,74,.2)">pick a tab to edit</span>
+      </div>
+      <div class="section-body">
+
+        <!-- Tab + Source selector row -->
+        <div style="display:grid;grid-template-columns:200px 1fr auto;gap:12px;align-items:end;margin-bottom:20px">
+          <div>
+            <div class="stat-label" style="margin-bottom:6px">tab</div>
+            <select id="fc-tab" onchange="fcTabChange()" style="width:100%;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em">
+              <option value="">— select tab —</option>
+              <option value="all">ALL</option>
+              <option value="news">NEWS</option>
+              <option value="nature">NATURE</option>
+              <option value="science">SCIENCE</option>
+              <option value="health">HEALTH</option>
+              <option value="music">MUSIC</option>
+              <option value="comedy">COMEDY</option>
+              <option value="art">ART</option>
+              <option value="hobbies">HOBBIES</option>
+              <option value="outdoors">OUTDOORS</option>
+              <option value="consciousness">CONSCIOUSNESS</option>
+              <option value="tech">TECH</option>
+              <option value="finance">FINANCE</option>
+              <option value="gaming">GAMING</option>
+              <option value="sports">SPORTS</option>
+              <option value="holometry">HOLOMETRY</option>
+            </select>
+          </div>
+          <div>
+            <div class="stat-label" style="margin-bottom:6px">source <span style="font-weight:300;opacity:.6">(search to filter)</span></div>
+            <div style="position:relative">
+              <input id="fc-search" placeholder="search sources..." oninput="fcFilterSources()" style="width:100%;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:6px 6px 0 0;padding:8px 10px;font-family:var(--mono);font-size:11px;outline:none">
+              <select id="fc-source" size="5" style="width:100%;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-top:none;border-radius:0 0 6px 6px;font-family:var(--mono);font-size:11px;padding:4px 0;display:none" onchange="fcSourceSelect()">
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="stat-label" style="margin-bottom:6px">existing</div>
+            <button onclick="fcLoadExisting()" style="background:rgba(212,165,74,.1);color:var(--a);border:1px solid rgba(212,165,74,.2);border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;cursor:pointer;white-space:nowrap">load saved →</button>
+          </div>
+        </div>
+
+        <!-- Selected source + image picker -->
+        <div id="fc-picker" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;border:1px solid var(--bd)">
+            <div id="fc-selected-name" style="font-family:var(--mono);font-size:12px;color:var(--a);flex:1"></div>
+            <button onclick="fcFindImages()" id="fc-img-btn" style="background:var(--bg);color:var(--txm);border:1px solid var(--bd);border-radius:5px;padding:5px 12px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.06em">find photos →</button>
+          </div>
+
+          <!-- Image options -->
+          <div id="fc-images" style="display:none;margin-bottom:16px">
+            <div class="stat-label" style="margin-bottom:8px">choose photo</div>
+            <div id="fc-img-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+          </div>
+
+          <!-- Bio editor -->
+          <div id="fc-bio-section" style="display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div class="stat-label">bio</div>
+              <button onclick="fcGenerateBio()" id="fc-bio-btn" style="background:rgba(90,154,188,.1);color:var(--b);border:1px solid rgba(90,154,188,.2);border-radius:5px;padding:4px 12px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.06em">✦ write bio</button>
+            </div>
+            <textarea id="fc-bio-text" placeholder="Bio will appear here. You can edit before saving..." style="width:100%;min-height:90px;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:12px;font-family:'Space Grotesk',sans-serif;font-size:13px;line-height:1.6;resize:vertical;outline:none"></textarea>
+            <div id="fc-bio-status" style="font-family:var(--mono);font-size:9px;color:var(--txm);margin-top:4px;min-height:14px"></div>
+          </div>
+
+          <!-- Preview -->
+          <div id="fc-preview" style="display:none;margin:16px 0">
+            <div class="stat-label" style="margin-bottom:8px">preview</div>
+            <div style="border-radius:10px;background:var(--bg);border:1px solid rgba(212,165,74,.15);overflow:hidden;max-width:380px">
+              <img id="fc-prev-img" src="" style="width:100%;height:120px;object-fit:cover;object-position:center top;display:none">
+              <div style="padding:14px 16px">
+                <div style="font-family:var(--mono);font-size:8px;color:var(--a);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px;opacity:.7">featured voice</div>
+                <div id="fc-prev-name" style="font-size:14px;font-weight:600;margin-bottom:6px"></div>
+                <div id="fc-prev-bio" style="font-size:12px;color:#b0a898;line-height:1.6"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save button -->
+          <div style="display:flex;gap:10px;align-items:center">
+            <button onclick="fcSave()" id="fc-save-btn" style="background:var(--g);color:#1a1816;border:none;border-radius:6px;padding:10px 24px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;letter-spacing:.08em">save featured →</button>
+            <button onclick="fcClear()" style="background:none;color:var(--txm);border:1px solid var(--bd);border-radius:6px;padding:10px 16px;font-family:var(--mono);font-size:10px;cursor:pointer">clear</button>
+            <span id="fc-save-status" style="font-family:var(--mono);font-size:10px;color:var(--txm)"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const BASE = 'https://phiable.netlify.app';
+
+// Complete source list with all tabs
+const SOURCES = [
+  // NEWS
+  {id:"propublica",n:"ProPublica",cat:"news"},{id:"ap",n:"AP News",cat:"news"},{id:"reuters",n:"Reuters",cat:"news"},{id:"bbc",n:"BBC News",cat:"news"},{id:"nprnews",n:"NPR News",cat:"news"},{id:"guardian",n:"The Guardian",cat:"news"},{id:"aljazeera",n:"Al Jazeera",cat:"news"},{id:"bellingcat",n:"Bellingcat",cat:"news"},{id:"intercept",n:"The Intercept",cat:"news"},{id:"lever",n:"The Lever",cat:"news"},{id:"markup",n:"The Markup",cat:"news"},{id:"404media",n:"404 Media",cat:"news"},{id:"dropsite",n:"Drop Site",cat:"news"},{id:"mpu",n:"More Perfect Union",cat:"news"},{id:"steady",n:"Steady",cat:"news"},{id:"vspehar",n:"Under the Desk News",cat:"news"},{id:"matthewcooke",n:"Matthew Cooke",cat:"news"},
+  // NATURE
+  {id:"outside",n:"Outside",cat:"nature"},{id:"natgeo",n:"National Geographic",cat:"nature"},{id:"audubon",n:"Audubon",cat:"nature"},{id:"rewilding",n:"Rewilding Europe",cat:"nature"},{id:"iucn",n:"IUCN",cat:"nature"},{id:"allaboutbirds",n:"All About Birds",cat:"nature"},{id:"northspore",n:"North Spore",cat:"nature"},{id:"stamets",n:"Fungi Perfecti (Paul Stamets)",cat:"nature"},
+  // SCIENCE
+  {id:"quanta",n:"Quanta Magazine",cat:"science"},{id:"veritasium",n:"Veritasium",cat:"science"},{id:"spacetime",n:"PBS Space Time",cat:"science"},{id:"sabine",n:"Sabine Hossenfelder",cat:"science"},{id:"carroll",n:"Sean Carroll",cat:"science"},{id:"siegel",n:"Starts With a Bang",cat:"science"},{id:"3b1b",n:"3Blue1Brown",cat:"science"},{id:"cgpgrey",n:"CGP Grey",cat:"science"},{id:"hankgreen",n:"Hank Green",cat:"science"},{id:"tomscott",n:"Tom Scott",cat:"science"},{id:"adamneely",n:"Adam Neely",cat:"science"},
+  // HEALTH
+  {id:"huberman",n:"Andrew Huberman",cat:"health"},{id:"peterattia",n:"Peter Attia",cat:"health"},{id:"rhondapatrick",n:"Rhonda Patrick",cat:"health"},{id:"medscape",n:"Medscape",cat:"health"},{id:"statnews",n:"STAT News",cat:"health"},{id:"nih_news",n:"NIH News",cat:"health"},{id:"retraction",n:"Retraction Watch",cat:"health"},
+  // MUSIC
+  {id:"beato",n:"Rick Beato",cat:"music"},{id:"darol_anger",n:"Darol Anger",cat:"music"},{id:"jesse_welles",n:"Jesse Welles",cat:"music"},{id:"mason_jennings",n:"Mason Jennings",cat:"music"},{id:"henhouse",n:"Hen House Studios",cat:"music"},{id:"pitchfork",n:"Pitchfork",cat:"music"},{id:"bandcamp",n:"Bandcamp Daily",cat:"music"},{id:"allaboutjazz",n:"All About Jazz",cat:"music"},{id:"folk_alley",n:"Folk Alley",cat:"music"},{id:"old_time_herald",n:"Old Time Herald",cat:"music"},
+  // COMEDY
+  {id:"theonion",n:"The Onion",cat:"comedy"},{id:"hardtimes",n:"The Hard Times",cat:"comedy"},{id:"mcsweeney",n:"McSweeney's",cat:"comedy"},{id:"reductress",n:"Reductress",cat:"comedy"},{id:"chortle",n:"Chortle",cat:"comedy"},{id:"daily_show_pod",n:"Daily Show: Ears Edition",cat:"comedy"},{id:"lastweektonight",n:"Last Week Tonight (John Oliver)",cat:"comedy"},{id:"billburr",n:"Bill Burr",cat:"comedy"},{id:"office_ladies",n:"Office Ladies (Jenna Fischer & Angela Kinsey)",cat:"comedy"},{id:"snafu_edhelms",n:"SNAFU (Ed Helms)",cat:"comedy"},{id:"goodhang_amy",n:"Good Hang (Amy Poehler)",cat:"comedy"},{id:"elle_cordova",n:"Elle Cordova",cat:"comedy"},{id:"isabel_hagen",n:"Isabel Hagen",cat:"comedy"},
+  // ART
+  {id:"hyperallergic",n:"Hyperallergic",cat:"art"},{id:"colossal",n:"Colossal",cat:"art"},{id:"designboom",n:"Designboom",cat:"art"},{id:"it_nice_that",n:"It's Nice That",cat:"art"},{id:"brainpickings",n:"The Marginalian (Maria Popova)",cat:"art"},{id:"artnet",n:"Artnet News",cat:"art"},{id:"juxtapoz",n:"Juxtapoz",cat:"art"},{id:"publicdelivery",n:"Public Delivery",cat:"art"},
+  // HOBBIES
+  {id:"atlasobscura",n:"Atlas Obscura",cat:"hobbies"},{id:"hackaday",n:"Hackaday",cat:"hobbies"},{id:"makezine",n:"Make Magazine",cat:"hobbies"},{id:"nickofferman",n:"Nick Offerman",cat:"hobbies"},{id:"bonsaitonight",n:"Bonsai Tonight",cat:"hobbies"},{id:"seriouseats",n:"Serious Eats",cat:"hobbies"},{id:"woodgears",n:"Wood Gears",cat:"hobbies"},
+  // OUTDOORS
+  {id:"backpacker",n:"Backpacker",cat:"outdoors"},{id:"thetrek",n:"The Trek",cat:"outdoors"},{id:"rei_blog",n:"REI Blog",cat:"outdoors"},{id:"gearjunkie",n:"Gear Junkie",cat:"outdoors"},{id:"trailrunner",n:"Trail Runner",cat:"outdoors"},{id:"advjournal",n:"Adventure Journal",cat:"outdoors"},
+  // CONSCIOUSNESS
+  {id:"aeon_psych",n:"Aeon",cat:"consciousness"},{id:"nautilus",n:"Nautilus",cat:"consciousness"},{id:"qualia_research",n:"Qualia Research Institute",cat:"consciousness"},{id:"soulboom",n:"Soul Boom (Rainn Wilson)",cat:"consciousness"},{id:"jgl",n:"Joseph Gordon-Levitt",cat:"consciousness"},{id:"garronnoone",n:"Garron Noone",cat:"consciousness"},{id:"chacruna",n:"Chacruna",cat:"consciousness"},{id:"neurosciencenews",n:"Neuroscience News",cat:"consciousness"},{id:"edge",n:"Edge.org",cat:"consciousness"},
+  // TECH
+  {id:"stratechery",n:"Stratechery (Ben Thompson)",cat:"tech"},{id:"benedictevans",n:"Benedict Evans",cat:"tech"},{id:"simonw",n:"Simon Willison",cat:"tech"},{id:"lizdev",n:"Liz the Developer",cat:"tech"},{id:"hackernews",n:"Hacker News",cat:"tech"},
+  // FINANCE
+  {id:"wolfstreet",n:"Wolf Street",cat:"finance"},{id:"planetmoney",n:"Planet Money",cat:"finance"},{id:"nakedcapitalism",n:"Naked Capitalism",cat:"finance"},{id:"labornotesorg",n:"Labor Notes",cat:"finance"},{id:"freakonomics",n:"Freakonomics",cat:"finance"},{id:"opensecrets",n:"OpenSecrets",cat:"finance"},
+  // GAMING
+  {id:"kotaku",n:"Kotaku",cat:"gaming"},{id:"polygon",n:"Polygon",cat:"gaming"},{id:"eurogamer",n:"Eurogamer",cat:"gaming"},{id:"rockpapershotgun",n:"Rock Paper Shotgun",cat:"gaming"},
+  // SPORTS
+  {id:"espn",n:"ESPN",cat:"sports"},{id:"guardian_sport",n:"Guardian Sport",cat:"sports"},{id:"theathletic",n:"The Athletic",cat:"sports"},{id:"deadspin",n:"Deadspin",cat:"sports"},{id:"cycling_weekly",n:"Cycling Weekly",cat:"sports"},{id:"velonews",n:"VeloNews",cat:"sports"},{id:"ultiworld",n:"Ultiworld",cat:"sports"},
+  // HOLOMETRY
+  {id:"vsauce",n:"Vsauce",cat:"holometry"},{id:"terrytao",n:"Terence Tao",cat:"holometry"},{id:"scottaaronson",n:"Scott Aaronson",cat:"holometry"},{id:"numberphile",n:"Numberphile",cat:"holometry"},{id:"wolfram",n:"Wolfram",cat:"holometry"},{id:"standupmaths",n:"Stand-up Maths",cat:"holometry"},{id:"johncbaez",n:"John Baez",cat:"holometry"},{id:"quanta_math",n:"Quanta Math",cat:"holometry"},
+];
+
+const CAT_COLORS = {
+  news:'#e8845a', nature:'#6abca0', science:'#5a9abc', health:'#bc5a8a',
+  music:'#d4a54a', comedy:'#8abc5a', art:'#bc6a9a', hobbies:'#9a7ebc',
+  consciousness:'#9a7ebc', tech:'#5abcb0', finance:'#bcb05a', gaming:'#bc6a5a',
+  holometry:'#b896d6'
+};
+
+function ago(ts) {
+  const d = Date.now() - ts;
+  if(d < 60000) return Math.floor(d/1000) + 's ago';
+  if(d < 3600000) return Math.floor(d/60000) + 'm ago';
+  if(d < 86400000) return Math.floor(d/3600000) + 'h ago';
+  return Math.floor(d/86400000) + 'd ago';
+}
+
+function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
+
+// ── FETCH ARTICLES ──
+async function fetchArticles() {
+  const panel = document.getElementById('articles-panel');
+  try {
+    const r = await fetch(BASE + '/api/articles?limit=200', {signal: AbortSignal.timeout(10000)});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    const arts = data.articles || [];
+    
+    document.getElementById('stat-articles').textContent = fmt(arts.length);
+    document.getElementById('stat-articles-sub').textContent = `last updated ${data.updated ? ago(new Date(data.updated).getTime()) : 'unknown'}`;
+    document.getElementById('art-count-badge').textContent = arts.length + ' total';
+
+    // Category breakdown
+    const cats = {};
+    arts.forEach(a => { cats[a.cat] = (cats[a.cat]||0)+1; });
+    renderCats(cats, arts.length);
+
+    // Recent articles list
+    const recent = arts.slice(0, 30);
+    if(!recent.length) {
+      panel.innerHTML = '<div class="empty-msg">NO ARTICLES YET</div>';
+      return;
+    }
+    panel.innerHTML = recent.map(a => `
+      <div class="art-row">
+        <div class="art-dot" style="background:${CAT_COLORS[a.cat]||'#888'}"></div>
+        <div>
+          <div class="art-title">${escHtml(a.title||'untitled')}</div>
+          <div class="art-meta" style="margin-top:3px">${escHtml(a.source||'')} · ${a.cat||''} · ${a.verified ? ago(a.verified) : ''}</div>
+        </div>
+        <div>${a.corridors ? '<div class="art-verified">✓ verified</div>' : '<span style="color:var(--txd);font-family:var(--mono);font-size:9px">pending</span>'}</div>
+      </div>
+    `).join('');
+
+    return { ok: true, count: arts.length };
+  } catch(e) {
+    panel.innerHTML = `<div class="err-msg">articles endpoint failed: ${e.message}</div>`;
+    document.getElementById('stat-articles').textContent = 'err';
+    return { ok: false, error: e.message };
+  }
+}
+
+// ── FETCH VERIFY (queue check) ──
+async function fetchQueue() {
+  const panel = document.getElementById('queue-panel');
+  // Check a nonexistent key just to confirm the endpoint responds
+  try {
+    const r = await fetch(BASE + '/api/verify?key=monitor_probe', {signal: AbortSignal.timeout(8000)});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    
+    // verify GET returned {status:"pending"} = endpoint alive
+    document.getElementById('stat-queue').textContent = '—';
+    document.getElementById('stat-queue-sub').textContent = 'endpoint alive · queue in blobs';
+    document.getElementById('queue-badge').textContent = 'endpoint OK';
+    panel.innerHTML = `
+      <div class="log-line ok">
+        <span class="log-ts">${new Date().toLocaleTimeString()}</span>
+        <span class="log-msg">GET /api/verify → ${data.status} (endpoint alive)</span>
+      </div>
+      <div class="log-line" style="margin-top:8px">
+        <span class="log-ts"></span>
+        <span class="log-msg" style="color:var(--txm)">Queue items live in Netlify Blobs (worker_queue store). Deep verify runs via /api/worker on schedule.</span>
+      </div>
+    `;
+    return { ok: true };
+  } catch(e) {
+    panel.innerHTML = `<div class="err-msg">verify endpoint: ${e.message}</div>`;
+    document.getElementById('stat-queue').textContent = 'err';
+    return { ok: false, error: e.message };
+  }
+}
+
+// ── RSS HEALTH CHECK ──
+async function checkRSS() {
+  const panel = document.getElementById('rss-panel');
+  const badge = document.getElementById('rss-badge');
+  badge.textContent = 'checking...';
+
+  // Sample 15 sources (don't hammer all 161)
+  const sample = [
+    {id:'propublica',n:'ProPublica',cat:'news'},
+    {id:'quanta',n:'Quanta',cat:'science'},
+    {id:'theonion',n:'The Onion',cat:'comedy'},
+    {id:'huberman',n:'Huberman Lab',cat:'health'},
+    {id:'hyperallergic',n:'Hyperallergic',cat:'art'},
+    {id:'wolfstreet',n:'Wolf Street',cat:'finance'},
+    {id:'terrytao',n:'Terence Tao',cat:'holometry'},
+    {id:'bandcamp',n:'Bandcamp Daily',cat:'music'},
+    {id:'cgpgrey',n:'CGP Grey',cat:'science'},
+    {id:'hankgreen',n:'Hank Green',cat:'science'},
+    {id:'billburr',n:'Bill Burr MMP',cat:'comedy'},
+    {id:'vspehar',n:'Under Desk News',cat:'news'},
+    {id:'soulboom',n:'Soul Boom',cat:'consciousness'},
+    {id:'kotaku',n:'Kotaku',cat:'gaming'},
+    {id:'nickofferman',n:'Nick Offerman',cat:'hobbies'},
+  ];
+
+  const results = await Promise.all(sample.map(async src => {
+    try {
+      const url = BASE + '/api/rss?src=' + src.id;
+      const r = await fetch(url, {signal: AbortSignal.timeout(8000)});
+      if(!r.ok) return {...src, status:'err', detail:'HTTP '+r.status};
+      const txt = await r.text();
+      if(!txt || txt.length < 50) return {...src, status:'warn', detail:'empty response'};
+      // Check for XML items
+      const itemCount = (txt.match(/<item>/gi)||[]).length + (txt.match(/<entry>/gi)||[]).length;
+      if(itemCount > 0) return {...src, status:'ok', detail:itemCount+' items'};
+      if(txt.includes('<rss') || txt.includes('<feed')) return {...src, status:'warn', detail:'feed empty'};
+      return {...src, status:'warn', detail:'unexpected format'};
+    } catch(e) {
+      return {...src, status:'err', detail:e.message.slice(0,30)};
+    }
+  }));
+
+  const ok = results.filter(r=>r.status==='ok').length;
+  const warn = results.filter(r=>r.status==='warn').length;
+  const err = results.filter(r=>r.status==='err').length;
+  badge.textContent = `${ok} ok · ${warn} warn · ${err} err`;
+
+  // Render in 3 columns
+  const cols = [[], [], []];
+  results.forEach((r, i) => cols[i % 3].push(r));
+  
+  panel.style.display = 'grid';
+  panel.style.gridTemplateColumns = '1fr 1fr 1fr';
+  panel.style.gap = '0 24px';
+  panel.innerHTML = cols.map(col => `
+    <div>${col.map(r => `
+      <div class="status-row">
+        <span class="status-name">${escHtml(r.n)}</span>
+        <span class="status-cat">${r.cat}</span>
+        <span class="status-pill ${r.status}">${r.status === 'ok' ? r.detail : r.status === 'warn' ? '⚠ '+r.detail : '✕ '+r.detail}</span>
+      </div>
+    `).join('')}</div>
+  `).join('');
+
+  return { ok: ok === sample.length };
+}
+
+// ── ENDPOINTS HEALTH ──
+async function checkEndpoints() {
+  const panel = document.getElementById('endpoints-panel');
+  const badge = document.getElementById('endpoints-badge');
+  
+  const endpoints = [
+    {name:'/api/articles', url: BASE+'/api/articles?limit=1', method:'GET'},
+    {name:'/api/verify GET', url: BASE+'/api/verify?key=probe', method:'GET'},
+    {name:'/api/rss (probe)', url: BASE+'/api/rss?src=quanta', method:'GET'},
+    {name:'/api/worker', url: BASE+'/api/worker', method:'GET'},
+  ];
+
+  const results = await Promise.all(endpoints.map(async ep => {
+    const t0 = Date.now();
+    try {
+      const r = await fetch(ep.url, {signal: AbortSignal.timeout(6000)});
+      const ms = Date.now() - t0;
+      const ct = r.headers.get('content-type')||'';
+      if(r.ok || r.status === 404 || r.status === 405) {
+        return {...ep, status:'ok', ms, code:r.status};
+      }
+      return {...ep, status:'warn', ms, code:r.status};
+    } catch(e) {
+      return {...ep, status:'err', ms: Date.now()-t0, code:0, err:e.message};
+    }
+  }));
+
+  const allOk = results.every(r => r.status === 'ok');
+  badge.textContent = allOk ? 'all ok' : 'issues found';
+
+  panel.innerHTML = results.map(r => `
+    <div class="status-row">
+      <span class="status-name" style="font-family:var(--mono);font-size:10px">${r.name}</span>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--txd)">${r.ms}ms</span>
+      <span class="status-pill ${r.status}">${r.status === 'ok' ? r.code+' OK' : r.status === 'warn' ? r.code+' warn' : 'ERR'}</span>
+    </div>
+  `).join('');
+
+  return results;
+}
+
+// ── CATEGORY BREAKDOWN ──
+function renderCats(cats, total) {
+  const panel = document.getElementById('cats-panel');
+  const badge = document.getElementById('cats-badge');
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  badge.textContent = sorted.length + ' categories';
+  
+  panel.innerHTML = sorted.map(([cat, count]) => {
+    const pct = total ? Math.round(count/total*100) : 0;
+    const color = CAT_COLORS[cat] || '#888';
+    return `
+      <div class="prog-wrap">
+        <div class="prog-label">
+          <span class="prog-name">${cat}</span>
+          <span class="prog-pct">${count} (${pct}%)</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── RUN ALL ──
+async function runAll() {
+  const dot = document.getElementById('live-dot');
+  const label = document.getElementById('live-label');
+  const lastCheck = document.getElementById('last-check');
+  
+  dot.className = 'live-dot warn';
+  label.textContent = 'checking...';
+
+  const [artResult, verResult, endResult, rssResult] = await Promise.all([
+    fetchArticles(),
+    fetchQueue(),
+    checkEndpoints(),
+    checkRSS(),
+  ]);
+
+  const allOk = artResult?.ok && verResult?.ok && rssResult?.ok;
+  const anyErr = !artResult?.ok || !verResult?.ok;
+  
+  dot.className = 'live-dot ' + (anyErr ? 'err' : allOk ? 'ok' : 'warn');
+  label.textContent = anyErr ? 'errors' : allOk ? 'healthy' : 'degraded';
+  lastCheck.textContent = 'checked ' + new Date().toLocaleTimeString();
+}
+
+// ══════════════════════════════════════════════
+// FEATURED CONTRIBUTOR EDITOR
+// ══════════════════════════════════════════════
+
+let fcState = { tab: '', source: null, imageUrl: '', bio: '' };
+let fcAllSources = [];
+
+function fcTabChange() {
+  const tab = document.getElementById('fc-tab').value;
+  fcState.tab = tab;
+  fcState.source = null;
+  fcState.imageUrl = '';
+  fcState.bio = '';
+  document.getElementById('fc-picker').style.display = 'none';
+  document.getElementById('fc-images').style.display = 'none';
+  document.getElementById('fc-bio-section').style.display = 'none';
+  document.getElementById('fc-preview').style.display = 'none';
+
+  if (!tab) return;
+
+  // Build source list for this tab (ALL = everything)
+  fcAllSources = tab === 'all' ? SOURCES : SOURCES.filter(s => s.cat === tab);
+  document.getElementById('fc-search').value = '';
+  fcFilterSources();
+  document.getElementById('fc-source').style.display = 'block';
+  document.getElementById('fc-badge').textContent = fcAllSources.length + ' sources in ' + tab.toUpperCase();
+}
+
+function fcFilterSources() {
+  const q = document.getElementById('fc-search').value.toLowerCase();
+  const sel = document.getElementById('fc-source');
+  const filtered = fcAllSources.filter(s => s.n.toLowerCase().includes(q));
+  sel.innerHTML = filtered.map(s =>
+    `<option value="${s.id}" data-name="${s.n}" data-cat="${s.cat}">${s.n}${fcState.tab === 'all' ? ' · '+s.cat : ''}</option>`
+  ).join('');
+  sel.style.display = filtered.length ? 'block' : 'none';
+}
+
+function fcSourceSelect() {
+  const sel = document.getElementById('fc-source');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt) return;
+  fcState.source = { id: opt.value, n: opt.getAttribute('data-name'), cat: opt.getAttribute('data-cat') };
+  document.getElementById('fc-selected-name').textContent = fcState.source.n;
+  document.getElementById('fc-picker').style.display = 'block';
+  document.getElementById('fc-images').style.display = 'none';
+  document.getElementById('fc-bio-section').style.display = 'block';
+  document.getElementById('fc-preview').style.display = 'none';
+  document.getElementById('fc-bio-text').value = '';
+  document.getElementById('fc-bio-status').textContent = '';
+}
+
+async function fcFindImages() {
+  if (!fcState.source) return;
+  const btn = document.getElementById('fc-img-btn');
+  const grid = document.getElementById('fc-img-grid');
+  const section = document.getElementById('fc-images');
+  btn.textContent = 'searching...';
+  btn.disabled = true;
+  section.style.display = 'block';
+  grid.innerHTML = '<div style="grid-column:span 4;font-family:var(--mono);font-size:10px;color:var(--txm)">searching for photos of '+escHtml(fcState.source.n)+'...</div>';
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Find 4 real, publicly accessible photo URLs of "${fcState.source.n}". Search their official website, Wikipedia, Substack, YouTube channel, or major press coverage. Return ONLY a JSON array of exactly 4 image URLs — direct image links ending in .jpg, .jpeg, .png, or .webp. No explanation, no markdown. Format: ["url1","url2","url3","url4"]`
+        }]
+      })
+    });
+    const data = await r.json();
+    let txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const match = txt.match(/\[[\s\S]*?\]/);
+    const urls = match ? JSON.parse(match[0]).filter(u => typeof u === 'string' && u.startsWith('http')) : [];
+
+    if (!urls.length) throw new Error('no images found');
+
+    grid.innerHTML = urls.slice(0, 4).map((url, i) => `
+      <div onclick="fcPickImage('${url.replace(/'/g,"\\'")}', this)" style="cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid transparent;transition:border-color .15s" data-idx="${i}">
+        <img src="${escHtml(url)}" style="width:100%;height:90px;object-fit:cover;object-position:center top;display:block;background:var(--bg3)" 
+             onerror="this.parentElement.style.opacity='.3';this.parentElement.style.pointerEvents='none'">
+      </div>
+    `).join('');
+  } catch(e) {
+    grid.innerHTML = `<div style="grid-column:span 4;font-family:var(--mono);font-size:10px;color:var(--r)">Could not find photos: ${escHtml(e.message)}. You can paste an image URL manually below.</div>
+    <div style="grid-column:span 4;margin-top:8px"><input id="fc-manual-url" placeholder="paste image URL..." style="width:100%;background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:5px;padding:8px;font-family:var(--mono);font-size:10px" oninput="fcPickImage(this.value)"></div>`;
+  }
+  btn.textContent = 'find photos →';
+  btn.disabled = false;
+}
+
+function fcPickImage(url, el) {
+  fcState.imageUrl = url;
+  // Highlight selected
+  document.querySelectorAll('#fc-img-grid > div').forEach(d => d.style.borderColor = 'transparent');
+  if (el) el.style.borderColor = 'var(--a)';
+  // Update preview
+  fcUpdatePreview();
+}
+
+async function fcGenerateBio() {
+  if (!fcState.source) return;
+  const btn = document.getElementById('fc-bio-btn');
+  const status = document.getElementById('fc-bio-status');
+  btn.textContent = '✦ writing...';
+  btn.disabled = true;
+  status.textContent = 'asking claude...';
+  status.style.color = 'var(--b)';
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Write a 2-3 sentence bio of ${fcState.source.n} for Phiable's ${fcState.source.cat} feed. 
+
+Phiable follows people who think deeply, speak honestly, and show up for their communities. Base the bio ONLY on what ${fcState.source.n} has actually and publicly demonstrated — specific work, specific stances, specific community. Do not use words like "passionate", "dedicated", "inspiring", or "thought leader". Do not flatter. Write like you are telling a friend why this person is worth following. 
+
+Search for real, specific things they have done. Then write the bio. Return ONLY the bio text, no labels, no quotes around it.`
+        }]
+      })
+    });
+    const data = await r.json();
+    const txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    document.getElementById('fc-bio-text').value = txt;
+    status.textContent = 'generated · edit freely before saving';
+    status.style.color = 'var(--g)';
+    fcUpdatePreview();
+  } catch(e) {
+    status.textContent = 'error: ' + e.message;
+    status.style.color = 'var(--r)';
+  }
+  btn.textContent = '✦ write bio';
+  btn.disabled = false;
+}
+
+function fcUpdatePreview() {
+  const preview = document.getElementById('fc-preview');
+  const img = document.getElementById('fc-prev-img');
+  const name = document.getElementById('fc-prev-name');
+  const bio = document.getElementById('fc-prev-bio');
+  const bioText = document.getElementById('fc-bio-text').value.trim();
+  if (!fcState.source) return;
+
+  preview.style.display = 'block';
+  name.textContent = fcState.source.n;
+  bio.textContent = bioText || '(bio will appear here)';
+
+  if (fcState.imageUrl) {
+    img.src = fcState.imageUrl;
+    img.style.display = 'block';
+  } else {
+    img.style.display = 'none';
+  }
+}
+
+// Auto-update preview when user edits bio
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('fc-bio-text').addEventListener('input', fcUpdatePreview);
+});
+
+async function fcLoadExisting() {
+  const tab = fcState.tab;
+  if (!tab) { alert('Select a tab first.'); return; }
+  try {
+    const r = await fetch(BASE + '/api/featured?tab=' + encodeURIComponent(tab));
+    const d = await r.json();
+    if (!d) { document.getElementById('fc-save-status').textContent = 'no saved contributor for ' + tab; return; }
+
+    // Set source
+    const src = SOURCES.find(s => s.id === d.sourceId);
+    if (src) {
+      fcState.source = src;
+      document.getElementById('fc-selected-name').textContent = src.n;
+    }
+    fcState.imageUrl = d.imageUrl || '';
+    document.getElementById('fc-bio-text').value = d.bio || '';
+    document.getElementById('fc-picker').style.display = 'block';
+    document.getElementById('fc-bio-section').style.display = 'block';
+    if (fcState.imageUrl) {
+      document.getElementById('fc-images').style.display = 'block';
+      document.getElementById('fc-img-grid').innerHTML = `
+        <div onclick="fcPickImage('${fcState.imageUrl.replace(/'/g,"\\'")}', this)" style="cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid var(--a)">
+          <img src="${escHtml(fcState.imageUrl)}" style="width:100%;height:90px;object-fit:cover;display:block">
+        </div>`;
+    }
+    fcUpdatePreview();
+    document.getElementById('fc-save-status').textContent = 'loaded · saved ' + ago(d.savedAt);
+  } catch(e) {
+    document.getElementById('fc-save-status').textContent = 'load failed: ' + e.message;
+  }
+}
+
+async function fcSave() {
+  const bioText = document.getElementById('fc-bio-text').value.trim();
+  if (!fcState.tab || !fcState.source || !bioText) {
+    document.getElementById('fc-save-status').textContent = 'need tab + source + bio to save';
+    return;
+  }
+  const btn = document.getElementById('fc-save-btn');
+  const status = document.getElementById('fc-save-status');
+  btn.textContent = 'saving...';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch(BASE + '/api/featured', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tab: fcState.tab,
+        sourceId: fcState.source.id,
+        sourceName: fcState.source.n,
+        cat: fcState.source.cat,
+        imageUrl: fcState.imageUrl,
+        bio: bioText
+      })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      status.textContent = '✓ saved · ' + fcState.source.n + ' is now featured in ' + fcState.tab.toUpperCase();
+      status.style.color = 'var(--g)';
+    } else {
+      throw new Error(d.error || 'save failed');
+    }
+  } catch(e) {
+    status.textContent = '✕ ' + e.message;
+    status.style.color = 'var(--r)';
+  }
+  btn.textContent = 'save featured →';
+  btn.disabled = false;
+}
+
+function fcClear() {
+  fcState = { tab: fcState.tab, source: null, imageUrl: '', bio: '' };
+  document.getElementById('fc-picker').style.display = 'none';
+  document.getElementById('fc-search').value = '';
+  document.getElementById('fc-save-status').textContent = '';
+  fcTabChange();
+}
+
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Boot
+runAll();
+// Auto-refresh every 2 minutes
+setInterval(runAll, 120000);
+</script>
+</body>
+</html>
