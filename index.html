@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--a:#d4a54a;--g:#7ebc6a;--r:#c45c4a;--bg:#1a1816;--bgd:#141210;--tx:#e8e0d4;--txm:#6a6258;--bd:rgba(255,235,200,0.08);--ag:rgba(212,165,74,0.15)}
+:root{--a:#d4a54a;--g:#7ebc6a;--r:#c45c4a;--b:#5a9abc;--bg:#1a1816;--bgd:#141210;--tx:#e8e0d4;--txm:#6a6258;--bd:rgba(255,235,200,0.08);--ag:rgba(212,165,74,0.15)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--tx);font-family:'Source Serif 4',Georgia,serif;-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh;height:100dvh}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:rgba(255,235,200,0.1);border-radius:3px}
@@ -397,6 +397,11 @@ const SRC=[
   {id:"simonw",n:"Simon Willison",c:"#5abcb0",cat:"tech",rss:"/api/rss?src=simonw"},
   {id:"benedictevans",n:"Benedict Evans",c:"#5a9abc",cat:"tech",rss:"/api/rss?src=benedictevans"},
   {id:"stratechery",n:"Stratechery",c:"#bc6a5a",cat:"tech",rss:"/api/rss?src=stratechery"},
+  {id:"wired",n:"Wired",c:"#c8c8c8",cat:"tech",rss:"/api/rss?src=wired"},
+  {id:"arstechnica",n:"Ars Technica",c:"#e8845a",cat:"tech",rss:"/api/rss?src=arstechnica"},
+  {id:"theregister",n:"The Register",c:"#c43a3a",cat:"tech",rss:"/api/rss?src=theregister"},
+  {id:"techcrunch",n:"TechCrunch",c:"#3a8a3a",cat:"tech",rss:"/api/rss?src=techcrunch"},
+  {id:"kottke",n:"Kottke",c:"#6a3abc",cat:"tech",rss:"/api/rss?src=kottke"},
   // VOICES: TECH
   {id:"lizdev",n:"Liz the Developer",c:"#3abc8a",cat:"tech",rss:"/api/rss?src=lizdev"},
   // FINANCE
@@ -1116,24 +1121,80 @@ function renderSrc(){
 // === SUPPORT VIEW ===
 function renderSup(){
   document.getElementById('sup').innerHTML=
-    '<div style="max-width:540px;margin:0 auto">'+
-    '<div style="text-align:center;margin-bottom:24px"><div style="font-size:22px;font-weight:500;margin-bottom:6px">Fund independent journalism</div><div style="font-size:14px;color:#b0a898;line-height:1.7">80% of every dollar goes directly to the newsrooms whose work Phiable verifies. They do not even have to sign up. The money is waiting for them.</div></div>'+
+    '<div style="max-width:600px;margin:0 auto;padding-bottom:40px">'+
 
-    '<div style="padding:20px;border-radius:12px;background:rgba(212,165,74,.08);border:1px solid rgba(212,165,74,.15);margin-bottom:16px">'+
-    '<div style="display:flex;gap:16px;margin-bottom:16px">'+
-    '<div style="flex:4;text-align:center;padding:16px;border-radius:8px;background:rgba(126,188,106,.08);border:1px solid rgba(126,188,106,.12)"><div style="font-size:28px;font-weight:700;color:var(--g)">80%</div><div style="font-size:12px;color:var(--g);margin-top:4px">Independent journalism</div></div>'+
-    '<div style="flex:1;text-align:center;padding:16px;border-radius:8px;background:rgba(255,235,200,.04);border:1px solid var(--bd)"><div style="font-size:28px;font-weight:700;color:var(--txm)">20%</div><div style="font-size:12px;color:var(--txm);margin-top:4px">Operations</div></div>'+
-    '</div>'+
-    '<div style="font-size:13px;color:#b0a898;line-height:1.7">Revenue is distributed proportionally based on how many articles each newsroom contributes and how those articles score. The newsrooms that produce the most verified, high-scoring journalism receive the largest share.</div>'+
+    // ── WHAT PHIABLE IS ──
+    '<div style="text-align:center;padding:32px 0 24px">'+
+      '<svg width="48" height="48" viewBox="0 0 40 40" fill="none" style="margin-bottom:16px"><circle cx="20" cy="20" r="13" stroke="#d4a54a" stroke-width="2" fill="none"/><line x1="20" y1="5" x2="20" y2="35" stroke="#d4a54a" stroke-width="2" stroke-linecap="round"/></svg>'+
+      '<div style="font-size:24px;font-weight:600;margin-bottom:8px">What Phiable Is</div>'+
+      '<div style="font-size:14px;color:#b0a898;line-height:1.8;max-width:480px;margin:0 auto">Three independent facts about the same story force a fourth thing to be true. That fourth thing is what Phiable publishes. Not opinion. Not spin. Geometry.</div>'+
     '</div>'+
 
-    '<a href="https://ko-fi.com/theflowcooperative?message=phiable" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;padding:16px;border-radius:10px;background:var(--g);color:#1a1816;font-size:14px;font-weight:700;text-decoration:none;font-family:\'DM Mono\',monospace;letter-spacing:.05em;margin-bottom:16px">SUPPORT INDEPENDENT JOURNALISM</a>'+
+    // ── THE THEOREM ──
+    '<div style="padding:20px;border-radius:12px;background:rgba(212,165,74,.06);border:1px solid rgba(212,165,74,.15);margin-bottom:20px">'+
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--a);letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px">The Descartes Circle Theorem</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8;margin-bottom:14px">In geometry, when three circles are mutually tangent, they force a fourth circle into existence in exactly one position. You do not place it there. It has to be there. The math demands it.</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8;margin-bottom:14px">Phiable applies this to information. Every story is searched from three completely independent angles: a government record, a different outlet, an expert or organization. If all three point in the same direction, the conclusion is forced. No single source said it. The combined geometry demands it.</div>'+
+      '<div style="font-size:13px;color:var(--a);line-height:1.8;font-style:italic">The theorem does not care about politics. It cares about closure.</div>'+
+    '</div>'+
 
-    '<div style="padding:16px;border-radius:10px;background:rgba(255,235,200,.03);border:1px solid var(--bd)">'+
-    '<div style="font-size:13px;color:#b0a898;line-height:1.7">'+
-    '<p style="margin:0 0 10px">Phiable is built by <strong style="color:var(--a)">The Flow Cooperative</strong>, a mutualistic creator network. The people who make the content own the system.</p>'+
-    '<p style="margin:0">20% covers server costs, verification engine, and development. Everything above that goes to the journalists. No ads. No data sales. No algorithmic manipulation.</p>'+
-    '</div></div>'+
+    // ── THREE CIRCLES ──
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">'+
+      '<div style="padding:16px;border-radius:10px;background:rgba(255,235,200,.03);border:1px solid var(--bd);text-align:center">'+
+        '<div style="font-size:22px;margin-bottom:8px">○</div>'+
+        '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--a);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px">Angle 1</div>'+
+        '<div style="font-size:12px;color:#b0a898;line-height:1.6">A primary source: record, report, data, or direct statement</div>'+
+      '</div>'+
+      '<div style="padding:16px;border-radius:10px;background:rgba(255,235,200,.03);border:1px solid var(--bd);text-align:center">'+
+        '<div style="font-size:22px;margin-bottom:8px">○</div>'+
+        '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--a);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px">Angle 2</div>'+
+        '<div style="font-size:12px;color:#b0a898;line-height:1.6">An independent outlet with no connection to angle 1</div>'+
+      '</div>'+
+      '<div style="padding:16px;border-radius:10px;background:rgba(255,235,200,.03);border:1px solid var(--bd);text-align:center">'+
+        '<div style="font-size:22px;margin-bottom:8px">○</div>'+
+        '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--a);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px">Angle 3</div>'+
+        '<div style="font-size:12px;color:#b0a898;line-height:1.6">An expert, organization, or domain source</div>'+
+      '</div>'+
+    '</div>'+
+
+    // ── Q SCORE ──
+    '<div style="padding:20px;border-radius:12px;background:rgba(126,188,106,.04);border:1px solid rgba(126,188,106,.12);margin-bottom:20px">'+
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--g);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px">The Q-Score</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8">Every story gets a Q-Score: a number from 0 to 100 measuring how tightly the three circles close around the claim. A score of 100 means perfect closure. The higher the score, the harder it is for the story to be wrong. The name comes from the Descartes equation, where Q = 0 is the condition for perfect tangency.</div>'+
+    '</div>'+
+
+    // ── SECURITY ──
+    '<div style="padding:20px;border-radius:12px;background:rgba(90,154,188,.04);border:1px solid rgba(90,154,188,.15);margin-bottom:20px">'+
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--b);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px">How the Data Stays Secure</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8;margin-bottom:12px">Phiable\'s verification data is protected by the same geometric model that drives its journalism. The cryptographic layer is built on the Apollonian gasket: a fractal structure in which every circle is tangent to its neighbors and the pattern never repeats exactly.</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8;margin-bottom:12px">Each communication session descends through 137 generations of the gasket, producing a key that is effectively impossible to reconstruct without knowing the exact path through the fractal. The number 137 is not arbitrary. It is the Wyler approximation of the fine structure constant, the number that governs how light and matter interact. It is woven into the fabric of physics.</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8">The security protocol is called the <strong style="color:var(--b)">Geometric Double Ratchet</strong>, developed as part of the Coleverest project. False circles oscillate. True circles settle. The gasket knows the difference.</div>'+
+    '</div>'+
+
+    // ── WHAT WE ARE NOT ──
+    '<div style="padding:20px;border-radius:12px;background:rgba(255,235,200,.02);border:1px solid var(--bd);margin-bottom:20px">'+
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--txm);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px">What Phiable Is Not</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8">Phiable does not produce original reporting. It does not have reporters. It does not editorialize. It does not pick which stories matter. It reads what the journalists write and asks whether three independent sources agree. If they do, it says so. If they do not, it says that too. The algorithm has no politics. It has only geometry.</div>'+
+    '</div>'+
+
+    // ── COOPERATIVE ──
+    '<div style="padding:20px;border-radius:12px;background:rgba(212,165,74,.06);border:1px solid rgba(212,165,74,.15);margin-bottom:20px">'+
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--a);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px">The Flow Cooperative</div>'+
+      '<div style="font-size:13px;color:#b0a898;line-height:1.8;margin-bottom:12px">Phiable is built by The Flow Cooperative: a mutualistic creator network where the people who make the content own the system. No venture capital. No advertising. No data sales. No algorithmic manipulation for engagement.</div>'+
+      '<div style="display:flex;gap:12px;margin-bottom:12px">'+
+        '<div style="flex:4;text-align:center;padding:14px;border-radius:8px;background:rgba(126,188,106,.08);border:1px solid rgba(126,188,106,.12)"><div style="font-size:26px;font-weight:700;color:var(--g)">80%</div><div style="font-size:11px;color:var(--g);margin-top:4px">goes to journalists</div></div>'+
+        '<div style="flex:1;text-align:center;padding:14px;border-radius:8px;background:rgba(255,235,200,.04);border:1px solid var(--bd)"><div style="font-size:26px;font-weight:700;color:var(--txm)">20%</div><div style="font-size:11px;color:var(--txm);margin-top:4px">operations</div></div>'+
+      '</div>'+
+      '<div style="font-size:12px;color:#8a7e6a;line-height:1.7">Revenue is distributed proportionally to the newsrooms whose work Phiable verifies, weighted by article volume and Q-Score. The newsrooms that produce the most verified, high-scoring journalism receive the most. They do not have to sign up. The money is waiting for them.</div>'+
+    '</div>'+
+
+    // ── SUPPORT BUTTON ──
+    '<a href="https://ko-fi.com/theflowcooperative?message=phiable" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;padding:16px;border-radius:10px;background:var(--g);color:#1a1816;font-size:13px;font-weight:700;text-decoration:none;font-family:\'DM Mono\',monospace;letter-spacing:.08em;margin-bottom:12px">SUPPORT INDEPENDENT JOURNALISM</a>'+
+
+    // ── DISCLAIMER ──
+    '<div style="padding:14px;border-radius:8px;background:rgba(255,235,200,.02);border:1px solid var(--bd)">'+
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--txm);line-height:1.8">Phiable is a verification tool, not a news source. It does not produce original reporting. All Q-Scores are computed algorithmically from publicly available sources. Phiable makes no claims of fact beyond what is explicitly supported by cited sources. The Forced Fourth and By Extension conclusions are geometric inferences, not confirmed facts, and are not accusations of wrongdoing by any party.</div>'+
+    '</div>'+
 
     '</div>';
 }

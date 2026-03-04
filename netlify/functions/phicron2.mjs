@@ -328,6 +328,16 @@ const SOURCES = {
   garronnoone:      { url: 'https://feeds.acast.com/public/shows/how-are-ye-gettin-on', cat: 'consciousness' },
   // VOICES: HOBBIES
   nickofferman:     { url: 'https://nickofferman.substack.com/feed', cat: 'hobbies' },
+  // TECH
+  hackernews:       { url: 'https://hnrss.org/frontpage', cat: 'tech' },
+  simonw:           { url: 'https://simonwillison.net/atom/everything/', cat: 'tech' },
+  benedictevans:    { url: 'https://www.ben-evans.com/benedictevans/rss.xml', cat: 'tech' },
+  stratechery:      { url: 'https://stratechery.com/feed/', cat: 'tech' },
+  wired:            { url: 'https://www.wired.com/feed/rss', cat: 'tech' },
+  arstechnica:      { url: 'https://feeds.arstechnica.com/arstechnica/index', cat: 'tech' },
+  theregister:      { url: 'https://www.theregister.com/headlines.atom', cat: 'tech' },
+  techcrunch:       { url: 'https://techcrunch.com/feed/', cat: 'tech' },
+  kottke:           { url: 'https://kottke.org/feed', cat: 'tech' },
   // VOICES: TECH
   lizdev:           { url: 'https://lizthe.dev/feed', cat: 'tech' },
 };
