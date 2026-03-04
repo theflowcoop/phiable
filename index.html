@@ -133,7 +133,15 @@ a{color:inherit}
 .ld{padding:40px;text-align:center}.ld svg{animation:spin 2s linear infinite;margin-bottom:12px}.ld div{font-size:12px;color:var(--a);font-family:'DM Mono',monospace}
 
 /* === RESPONSIVE === */
-@media(min-width:768px){#fcol{width:420px;min-width:420px;border-right:1px solid var(--bd)}#det{flex:1}#det.on{display:flex}}
+/* === FEATURED CONTRIBUTOR CARD === */
+.fc{margin:12px 12px 4px;border-radius:12px;background:var(--bgd);border:1px solid rgba(212,165,74,.18);overflow:hidden;animation:fadeUp .3s ease}
+.fc-img{width:100%;height:140px;object-fit:cover;object-position:center top;display:block;background:var(--bg)}
+.fc-img-placeholder{width:100%;height:140px;background:linear-gradient(135deg,rgba(212,165,74,.12),rgba(212,165,74,.04));display:flex;align-items:center;justify-content:center}
+.fc-body{padding:14px 16px}
+.fc-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--a);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;opacity:.7}
+.fc-name{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--tx)}
+.fc-bio{font-size:12px;color:#b0a898;line-height:1.65}
+
 @media(max-width:767px){#fcol.hid{display:none}}
 
 /* === QUICK ACTIONS === */
@@ -159,8 +167,8 @@ a{color:inherit}
   <div id="hdr">
     <div style="display:flex;align-items:center;gap:10px">
       <svg id="logo" width="36" height="36" viewBox="0 0 40 40" fill="none">
-        <ellipse cx="20" cy="20" rx="11" ry="15" stroke="#d4a54a" stroke-width="2.2" fill="none"/>
-        <line x1="20" y1="4" x2="20" y2="36" stroke="#d4a54a" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="13" stroke="#d4a54a" stroke-width="2.2" fill="none"/>
+        <line x1="20" y1="5" x2="20" y2="35" stroke="#d4a54a" stroke-width="2.2" stroke-linecap="round"/>
       </svg>
       <div style="display:flex;flex-direction:column;justify-content:center;gap:1px"><h1 style="line-height:1">phiable</h1><div class="sub">three circles force the truth</div></div>
     </div>
@@ -210,10 +218,12 @@ const CATS = [
   {id:'comedy',label:'COMEDY'},
   {id:'art',label:'ART'},
   {id:'hobbies',label:'HOBBIES'},
+  {id:'outdoors',label:'OUTDOORS'},
   {id:'consciousness',label:'CONSCIOUSNESS'},
   {id:'tech',label:'TECH'},
   {id:'finance',label:'FINANCE'},
   {id:'gaming',label:'GAMING'},
+  {id:'sports',label:'SPORTS'},
   {id:'holometry',label:'HOLOMETRY'},
 ];
 let activeCat='all';
@@ -355,6 +365,13 @@ const SRC=[
   {id:"seriouseats",n:"Serious Eats",c:"#bc3a3a",cat:"hobbies",rss:"/api/rss?src=seriouseats"},
   {id:"woodgears",n:"Wood Gears",c:"#8a6a3a",cat:"hobbies",rss:"/api/rss?src=woodgears"},
   {id:"nickofferman",n:"Nick Offerman",c:"#8a6a3a",cat:"hobbies",rss:"/api/rss?src=nickofferman"},
+  // OUTDOORS
+  {id:"backpacker",n:"Backpacker",c:"#5a8a3a",cat:"outdoors",rss:"/api/rss?src=backpacker"},
+  {id:"thetrek",n:"The Trek",c:"#8a6a3a",cat:"outdoors",rss:"/api/rss?src=thetrek"},
+  {id:"rei_blog",n:"REI Blog",c:"#3a6a3a",cat:"outdoors",rss:"/api/rss?src=rei_blog"},
+  {id:"gearjunkie",n:"Gear Junkie",c:"#3a5a8a",cat:"outdoors",rss:"/api/rss?src=gearjunkie"},
+  {id:"bearfoottheory",n:"Bearfoot Theory",c:"#8a3a3a",cat:"outdoors",rss:"/api/rss?src=bearfoottheory"},
+  {id:"treeline_review",n:"Treeline Review",c:"#5a3a8a",cat:"outdoors",rss:"/api/rss?src=treeline_review"},
   // CONSCIOUSNESS (absorbs Frontier philosophy)
   {id:"doubleblind",n:"DoubleBlind",c:"#9a7ebc",cat:"consciousness",rss:"/api/rss?src=doubleblind"},
   {id:"maps",n:"MAPS",c:"#7a5aac",cat:"consciousness",rss:"/api/rss?src=maps"},
@@ -397,6 +414,14 @@ const SRC=[
   {id:"eurogamer",n:"Eurogamer",c:"#3abc6a",cat:"gaming",rss:"/api/rss?src=eurogamer"},
   {id:"rockpapershotgun",n:"Rock Paper Shotgun",c:"#bc8a3a",cat:"gaming",rss:"/api/rss?src=rockpapershotgun"},
   {id:"polygon",n:"Polygon",c:"#c43a6a",cat:"gaming",rss:"/api/rss?src=polygon"},
+  // SPORTS
+  {id:"espn",n:"ESPN",c:"#d4001f",cat:"sports",rss:"/api/rss?src=espn"},
+  {id:"guardian_sport",n:"Guardian Sport",c:"#3a8a5a",cat:"sports",rss:"/api/rss?src=guardian_sport"},
+  {id:"theathletic",n:"The Athletic",c:"#5a6abc",cat:"sports",rss:"/api/rss?src=theathletic"},
+  {id:"deadspin",n:"Deadspin",c:"#bc3a3a",cat:"sports",rss:"/api/rss?src=deadspin"},
+  {id:"cycling_weekly",n:"Cycling Weekly",c:"#3a6abc",cat:"sports",rss:"/api/rss?src=cycling_weekly"},
+  {id:"velonews",n:"VeloNews",c:"#bc3a8a",cat:"sports",rss:"/api/rss?src=velonews"},
+  {id:"ultiworld",n:"Ultiworld",c:"#6abc3a",cat:"sports",rss:"/api/rss?src=ultiworld"},
   // HOLOMETRY
   {id:"vsauce",n:"Vsauce",c:"#3a6abc",cat:"holometry",rss:"/api/rss?src=vsauce"},
   {id:"standupmaths",n:"Stand-up Maths",c:"#bc6a3a",cat:"holometry",rss:"/api/rss?src=standupmaths"},
@@ -465,6 +490,17 @@ function blockKey(ts){return Math.floor(ts/108e5)}
 
 // === STATE ===
 let articles=[],selA=null,view='feed',feedPage=0,ITEMS_PER_PAGE=20,searchTerm='',pendingFileText=null;
+// Featured contributors cache: {tab -> {sourceId, sourceName, imageUrl, bio}}
+const featuredCache={};
+async function loadFeatured(tab){
+  if(featuredCache[tab]!==undefined)return featuredCache[tab];
+  try{
+    const r=await fetch('/api/featured?tab='+encodeURIComponent(tab));
+    const d=await r.json();
+    featuredCache[tab]=d||null;
+    return featuredCache[tab];
+  }catch(e){featuredCache[tab]=null;return null;}
+}
 const catScrollPos={};
 const catFeedPage={};
 function backendKey(title,sourceId){let h=0;const s=title+'|'+sourceId+'|';for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return'v'+Math.abs(h)}
@@ -872,6 +908,22 @@ function renderFeed(){
 
   const sorted=[...pool].sort((a,b)=>b.ts-a.ts);
   const blocks=new Map();
+
+  // Inject featured contributor card at top (async, non-blocking)
+  if(!searchTerm){
+    loadFeatured(activeCat).then(fc=>{
+      if(!fc)return;
+      const existing=el.querySelector('.fc');
+      if(existing)return; // already rendered
+      const imgHtml=fc.imageUrl
+        ?'<img class="fc-img" src="'+fc.imageUrl+'" alt="'+fc.sourceName+'" onerror="this.style.display=\'none\'">'
+        :'<div class="fc-img-placeholder"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="#d4a54a" stroke-width="1.5" fill="none"/><line x1="20" y1="5" x2="20" y2="35" stroke="#d4a54a" stroke-width="1.5" stroke-linecap="round"/></svg></div>';
+      const card='<div class="fc">'+imgHtml+'<div class="fc-body"><div class="fc-label">featured voice</div><div class="fc-name">'+fc.sourceName+'</div><div class="fc-bio">'+fc.bio+'</div></div></div>';
+      el.insertAdjacentHTML('afterbegin',card);
+    });
+  }
+
+
   sorted.forEach(a=>{const k=blockKey(a.ts);if(!blocks.has(k))blocks.set(k,[]);blocks.get(k).push(a)});
   blocks.forEach(arr=>arr.sort((a,b)=>b.os-a.os));
 
