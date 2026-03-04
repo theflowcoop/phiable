@@ -5,7 +5,7 @@
 
 import { getStore } from "@netlify/blobs";
 
-const MAX_VERIFY_PER_RUN = 5;
+const MAX_VERIFY_PER_RUN = 10;
 const CLAUDE_TIMEOUT_MS  = 15000;
 const BLOB_TIMEOUT_MS    = 5000;
 const RSS_TIMEOUT_MS     = 8000;
@@ -220,17 +220,20 @@ export default async (req, context) => {
     }
   }
 
-  console.log(`[cron] ${candidates.length} candidates, verifying up to ${MAX_VERIFY_PER_RUN}`);
+  console.log(`[cron] ${candidates.length} candidates, verifying up to ${MAX_VERIFY_PER_RUN} in parallel`);
 
-  // Fast verify up to cap, queue rest for worker
-  for (let i = 0; i < candidates.length; i++) {
-    const article = candidates[i];
+  const toVerify = candidates.slice(0, MAX_VERIFY_PER_RUN);
+  const toQueue  = candidates.slice(MAX_VERIFY_PER_RUN);
 
-    if (i < MAX_VERIFY_PER_RUN) {
-      // Fast verify (no web_search)
+  // Parallel fast verify
+  const verifyResults = await Promise.allSettled(
+    toVerify.map(article => fastVerify(article, apiKey).then(result => ({ article, result })))
+  );
+
+  for (const r of verifyResults) {
+    if (r.status === 'fulfilled') {
+      const { article, result } = r.value;
       try {
-        console.log(`[cron] Fast verify: ${article.title.slice(0, 60)}`);
-        const result = await fastVerify(article, apiKey);
         await withTimeout(verStore.setJSON(article.key, result), BLOB_TIMEOUT_MS, `blob write ${article.key}`);
         newEntries.push({
           id: article.key, title: article.title,
@@ -242,20 +245,24 @@ export default async (req, context) => {
         verifiedIds.add(article.key);
         stats.verified++;
       } catch (e) {
-        console.warn(`[cron] Failed "${article.title.slice(0,40)}": ${e.message}`);
+        console.warn(`[cron] Blob write failed "${article.title.slice(0,40)}": ${e.message}`);
         stats.failed++;
       }
     } else {
-      // Queue for worker deep verification
-      try {
-        await withTimeout(
-          queueStore.setJSON(article.key, { ...article, queuedAt: Date.now() }),
-          BLOB_TIMEOUT_MS, `queue ${article.key}`
-        );
-        stats.queued++;
-      } catch (e) { /* non-fatal */ }
+      console.warn(`[cron] Verify failed: ${r.reason?.message}`);
+      stats.failed++;
     }
   }
+
+  // Queue remainder for worker
+  await Promise.allSettled(
+    toQueue.map(article =>
+      withTimeout(
+        queueStore.setJSON(article.key, { ...article, queuedAt: Date.now() }),
+        BLOB_TIMEOUT_MS, `queue ${article.key}`
+      ).then(() => { stats.queued++; }).catch(() => {})
+    )
+  );
 
   // Save index
   if (newEntries.length > 0) {
@@ -271,5 +278,4 @@ export default async (req, context) => {
   return new Response(summary, { status: 200 });
 };
 
-export const config = { schedule: '*/5 * * * *' };
-// Wed Mar  4 09:45:19 PST 2026
+export const config = { schedule: '* * * * *' };
