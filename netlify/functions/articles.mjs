@@ -33,8 +33,8 @@ export default async (req, context) => {
     const cat = url.searchParams.get("cat");
     if (cat && cat !== "all") articles = articles.filter(a => a.cat === cat);
 
-    // Apply limit
-    const limit = parseInt(url.searchParams.get("limit")) || 200;
+    // Apply limit — default 5000 to match store cap
+    const limit = parseInt(url.searchParams.get("limit")) || 5000;
     articles = articles.slice(0, limit);
 
     return new Response(JSON.stringify({

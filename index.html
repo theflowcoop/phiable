@@ -707,7 +707,7 @@ async function loadFeeds(){
 
   // Load pre-verified articles from server first
   try{
-    const r=await fetch('/api/articles?limit=500');
+    const r=await fetch('/api/articles?limit=5000');
     if(r.ok){
       const data=await r.json();
       if(data.articles&&data.articles.length){
