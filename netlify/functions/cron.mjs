@@ -5,7 +5,7 @@
 
 import { getStore } from "@netlify/blobs";
 
-const MAX_VERIFY_PER_RUN = 20;
+const MAX_VERIFY_PER_RUN = 10;
 const CLAUDE_TIMEOUT_MS  = 15000;
 const BLOB_TIMEOUT_MS    = 5000;
 const RSS_TIMEOUT_MS     = 8000;
@@ -271,4 +271,4 @@ export default async (req, context) => {
   return new Response(summary, { status: 200 });
 };
 
-export const config = { schedule: '0 */2 * * *' };
+export const config = { schedule: '*/5 * * * *' };
