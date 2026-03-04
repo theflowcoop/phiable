@@ -5,8 +5,8 @@
 
 import { getStore } from "@netlify/blobs";
 
-const MAX_VERIFY_PER_RUN = 10;
-const CLAUDE_TIMEOUT_MS  = 15000;
+const MAX_VERIFY_PER_RUN = 20;
+const CLAUDE_TIMEOUT_MS  = 20000;
 const BLOB_TIMEOUT_MS    = 5000;
 const RSS_TIMEOUT_MS     = 8000;
 const ITEMS_PER_SOURCE   = 15;
@@ -207,7 +207,7 @@ export default async (req, context) => {
 
   // Load index
   let index;
-  try { index = await withTimeout(artStore.get('_index', { type: 'json' }), BLOB_TIMEOUT_MS, 'load index'); }
+  try { index = await withTimeout(artStore.get('_index_a', { type: 'json' }), BLOB_TIMEOUT_MS, 'load index'); }
   catch (e) { console.warn(`[cron] Index load: ${e.message}`); index = null; }
   if (!index) index = { articles: [], updated: null };
 
@@ -302,7 +302,7 @@ export default async (req, context) => {
     index.articles = [...newEntries, ...index.articles];
     if (index.articles.length > 2000) index.articles = index.articles.slice(0, 2000);
     index.updated = new Date().toISOString();
-    try { await withTimeout(artStore.setJSON('_index', index), BLOB_TIMEOUT_MS, 'save index'); }
+    try { await withTimeout(artStore.setJSON('_index_a', index), BLOB_TIMEOUT_MS, 'save index'); }
     catch (e) { console.error(`[cron] Failed to save index: ${e.message}`); }
   }
 
