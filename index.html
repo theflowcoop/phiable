@@ -306,6 +306,9 @@ function blockKey(ts){return Math.floor(ts/108e5)}
 
 // === STATE ===
 let articles=[],selA=null,view='feed',feedPage=0,ITEMS_PER_PAGE=20,searchTerm='',pendingFileText=null;
+// Backend-compatible hash key for matching pre-verified articles
+function backendKey(title,sourceId){let h=0;const s=title+'|'+sourceId+'|';for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return'v'+Math.abs(h)}
+let verifiedCache={};// backendKey -> {corridors,forced_fourth,extension}
 
 // === RENDER CATEGORY TABS ===
 function renderCats(){
@@ -424,6 +427,17 @@ async function fetchRSS(src){
 // === VERIFICATION (queue + poll, never long-wait) ===
 async function verify(a,question){
   if(a.verified||a._verifying)return;
+  // Check server-side pre-verified cache first
+  if(!question){
+    const k=backendKey(a.ti,a.si);
+    if(verifiedCache[k]){
+      const c=verifiedCache[k];
+      a.cor=c.corridors;a.f4=c.forced_fourth;a.ex=c.extension;a.verified=true;
+      if(selA&&selA.id===a.id)renderDet(a);
+      renderFeed();
+      return;
+    }
+  }
   a._verifying=true;
   if(selA&&selA.id===a.id)renderDet(a);
   
@@ -510,7 +524,11 @@ async function loadFeeds(){
           });
         });
         dedup();renderFeed();renderCats();
-        console.log('[phi] loaded '+data.articles.length+' pre-verified from server');
+        // Populate verifiedCache so RSS articles can match without re-verifying
+        data.articles.forEach(pa=>{
+          if(pa.corridors){const k=backendKey(pa.title,pa.sourceId||pa.source||'');verifiedCache[k]={corridors:pa.corridors,forced_fourth:pa.forced_fourth,extension:pa.extension};}
+        });
+        console.log('[phi] loaded '+data.articles.length+' pre-verified from server, cache size='+Object.keys(verifiedCache).length);
       }
     }
   }catch(e){console.log('[phi] pre-verified load fail',e)}
