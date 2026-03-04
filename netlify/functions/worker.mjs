@@ -101,11 +101,16 @@ export default async (req, context) => {
     // Save to verifications store (overwrites fast result)
     await withTimeout(verStore.setJSON(key, result), BLOB_TIMEOUT_MS, `save verification ${key}`);
 
-    // Update article index entry to mark as deepVerified
+    // ── SAFETY GUARD: Update article index to mark as deepVerified ────────
+    // DO NOT REMOVE. History: 2026-03-04 — naive index=null on load failure
+    // caused store wipe in phicron. Same pattern here. If load fails, skip
+    // the update rather than risk corrupting the index.
+    // ─────────────────────────────────────────────────────────────────────
     let index;
-    try { index = await withTimeout(artStore.get('_index', { type: 'json' }), BLOB_TIMEOUT_MS, 'load index'); }
-    catch (e) { index = null; }
+    try { index = await withTimeout(artStore.get('_index_a', { type: 'json' }), BLOB_TIMEOUT_MS, 'load index'); }
+    catch (e) { console.warn(`[worker] Index load failed, skipping deepVerified update: ${e.message}`); index = null; }
     if (index?.articles) {
+      const originalCount = index.articles.length;
       const idx = index.articles.findIndex(a => a.id === key);
       if (idx >= 0) {
         index.articles[idx] = {
@@ -116,9 +121,15 @@ export default async (req, context) => {
           deepVerified: true,
           deepVerifiedAt: Date.now()
         };
-        await withTimeout(artStore.setJSON('_index', index), BLOB_TIMEOUT_MS, 'save index');
+        // Safety: only save if article count hasn't shrunk
+        if (index.articles.length >= originalCount) {
+          await withTimeout(artStore.setJSON('_index_a', index), BLOB_TIMEOUT_MS, 'save index');
+        } else {
+          console.error('[worker] SAFETY ABORT save: index shrank, skipping save');
+        }
       }
     }
+    // ── END SAFETY GUARD ──────────────────────────────────────────────────
 
     // Remove from queue
     await withTimeout(queueStore.delete(key), BLOB_TIMEOUT_MS, `delete queue ${key}`);
