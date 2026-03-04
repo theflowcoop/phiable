@@ -14,6 +14,55 @@ const ITEMS_PER_SOURCE   = 15;
 const SOURCES = {
   // NEWS
   propublica:       { url: 'https://www.propublica.org/feeds/propublica/main', cat: 'news' },
+  // COMMUNITY MUSIC
+  darol_anger:      { url: 'https://darolanger.substack.com/feed', cat: 'music' },
+  jessewelles:      { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCpKWFJJFkuJbYfbP9DmHWaA', cat: 'music' },
+  noside_session:   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCsT0YIqwnpJCM-mx7-gSA4Q', cat: 'music' },
+  acmegrassroots:   { url: 'https://www.acmegrassroots.com/feed/', cat: 'music' },
+  folkworks:        { url: 'https://folkworks.org/feed/', cat: 'music' },
+  fiddlehangout:    { url: 'https://www.fiddlehangout.com/feed/', cat: 'music' },
+  banjohangoout:    { url: 'https://www.banjohangout.org/feed/', cat: 'music' },
+  oldtimeparty:     { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCbqHqVrKXjpNCSXNhKhxVkQ', cat: 'music' },
+  apassion4jazz:    { url: 'https://www.apassion4jazz.net/feed/', cat: 'music' },
+  jazziz:           { url: 'https://jazziz.com/feed/', cat: 'music' },
+  allaboutjazz:     { url: 'https://www.allaboutjazz.com/rss/news.rss', cat: 'music' },
+  raffi_songs:      { url: 'https://www.raffinews.com/feed/', cat: 'music' },
+  henhouse:         { url: 'https://www.henhousestudios.com/blog/feed/', cat: 'music' },
+  masonjennings:    { url: 'https://www.masonjennings.com/feed/', cat: 'music' },
+  markoconnor:      { url: 'https://markoconnormusic.com/feed/', cat: 'music' },
+  // COMEDY
+  splitsider:       { url: 'https://www.avclub.com/comedy/rss', cat: 'comedy' },
+  theonion:         { url: 'https://www.theonion.com/rss', cat: 'comedy' },
+  clickhole:        { url: 'https://www.clickhole.com/rss', cat: 'comedy' },
+  hardtimes:        { url: 'https://thehardtimes.net/feed/', cat: 'comedy' },
+  mcsweeney:        { url: 'https://www.mcsweeneys.net/feed', cat: 'comedy' },
+  reductress:       { url: 'https://reductress.com/feed/', cat: 'comedy' },
+  chortle:          { url: 'https://www.chortle.co.uk/feed/', cat: 'comedy' },
+  vulture_comedy:   { url: 'https://www.vulture.com/comedy/rss', cat: 'comedy' },
+  punchlinemag:     { url: 'https://punchlinemag.com/feed/', cat: 'comedy' },
+  // ART
+  hyperallergic:    { url: 'https://hyperallergic.com/feed/', cat: 'art' },
+  artforum:         { url: 'https://www.artforum.com/feed/', cat: 'art' },
+  colossal:         { url: 'https://www.thisiscolossal.com/feed/', cat: 'art' },
+  artnews:          { url: 'https://www.artnews.com/feed/', cat: 'art' },
+  designboom:       { url: 'https://www.designboom.com/feed/', cat: 'art' },
+  it_nice_that:     { url: 'https://www.itsnicethat.com/feed', cat: 'art' },
+  creative_bloq:    { url: 'https://www.creativebloq.com/feed/', cat: 'art' },
+  ascii_art:        { url: 'https://www.ascii-art.de/feed/', cat: 'art' },
+  streetartutopia:  { url: 'https://www.streetartutopia.com/feed/', cat: 'art' },
+  publicdelivery:   { url: 'https://publicdelivery.org/feed/', cat: 'art' },
+  // FRONTIER SCIENCE
+  centerminds:      { url: 'https://centerformindandbrain.ucdavis.edu/feed/', cat: 'consciousness' },
+  qualia_research:  { url: 'https://www.qualiaresearchinstitute.org/blog?format=rss', cat: 'consciousness' },
+  integrated_info:  { url: 'https://iit.mind.wi.mit.edu/feed/', cat: 'consciousness' },
+  sci_consciousness:{ url: 'https://www.scienceofconsciousness.org/feed/', cat: 'consciousness' },
+  psychedelic_sci:  { url: 'https://maps.org/news/feed/', cat: 'consciousness' },
+  noetic_sci:       { url: 'https://noetic.org/feed/', cat: 'consciousness' },
+  edge_science:     { url: 'https://edgescience.org/feed/', cat: 'consciousness' },
+  skeptic_inquiry:  { url: 'https://skepticalinquirer.org/feed/', cat: 'consciousness' },
+  futurism:         { url: 'https://futurism.com/feed', cat: 'consciousness' },
+  singularity_hub:  { url: 'https://singularityhub.com/feed/', cat: 'consciousness' },
+
   // WIRE & BREAKING
   ap:               { url: 'https://feeds.apnews.com/apnews/topnews', cat: 'news' },
   reuters:          { url: 'https://feeds.reuters.com/reuters/topNews', cat: 'news' },
@@ -44,7 +93,6 @@ const SOURCES = {
   advjournal: { url: 'https://www.adventure-journal.com/feed/', cat: 'nature' },
   northspore:       { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC1IFVMqMSbqnMEBBRkVsgOA', cat: 'nature' },
   ffungi:    { url: 'https://fungi.com/blogs/fungi-perfecti.atom', cat: 'nature' },
-  ffungi:  { url: 'https://www.ffungi.org/blog?format=rss', cat: 'nature' },
   nama:             { url: 'https://namyco.org/feed/', cat: 'nature' },
   iucn:             { url: 'https://www.iucn.org/news/feed', cat: 'nature' },
   audubon:          { url: 'https://www.audubon.org/rss.xml', cat: 'nature' },
@@ -85,6 +133,17 @@ const SOURCES = {
   xlr8r:            { url: 'https://xlr8r.com/feed/', cat: 'music' },
   consequenceof:    { url: 'https://consequence.net/feed/', cat: 'music' },
   stereogum:        { url: 'https://www.stereogum.com/feed/', cat: 'music' },
+  // COMMUNITY MUSIC
+  jesse_welles:     { url: 'https://jessewelles.substack.com/feed', cat: 'music' },
+  mason_jennings:   { url: 'https://masonjennings.substack.com/feed', cat: 'music' },
+  raffi:            { url: 'https://raffinews.com/feed/', cat: 'music' },
+  americana_music:  { url: 'https://americanamusic.org/feed', cat: 'music' },
+  folk_alley:       { url: 'https://folkalley.com/feed/', cat: 'music' },
+  old_time_herald:  { url: 'https://oldtimeherald.org/feed/', cat: 'music' },
+  jazztimes:        { url: 'https://jazztimes.com/feed/', cat: 'music' },
+  downbeat:         { url: 'https://downbeat.com/feed/', cat: 'music' },
+  nonesuch:         { url: 'https://www.nonesuch.com/journal/feed', cat: 'music' },
+  emusician:        { url: 'https://www.emusician.com/feed/all/', cat: 'music' },
   // HOBBIES
   bonsaitonight:    { url: 'https://bonsaitonight.com/feed/', cat: 'hobbies' },
   bonsaiempire:     { url: 'https://www.bonsaiempire.com/feed', cat: 'hobbies' },
@@ -183,6 +242,51 @@ const SOURCES = {
   swimming_holes:   { url: 'https://www.swimmingholes.org/rss.xml', cat: 'outdoors' },
   campsites:        { url: 'https://thecampsite.co.uk/blog/feed/', cat: 'outdoors' },
   climbingnews:     { url: 'https://www.climbingnews.com/feed/', cat: 'outdoors' },
+
+  // COMEDY
+  comedy_wham:      { url: 'https://www.comedywham.com/feed/', cat: 'comedy' },
+  nerdist_comedy:   { url: 'https://nerdist.com/tag/comedy/feed/', cat: 'comedy' },
+  hard_times:       { url: 'https://thehardtimes.net/feed/', cat: 'comedy' },
+
+  // ART
+  juxtapoz:         { url: 'https://www.juxtapoz.com/rss/', cat: 'art' },
+  artsy:            { url: 'https://www.artsy.net/rss', cat: 'art' },
+  dezeen:           { url: 'https://www.dezeen.com/feed/', cat: 'art' },
+  smithsonian_art:  { url: 'https://www.smithsonianmag.com/rss/arts-culture/', cat: 'art' },
+  brainpickings2:   { url: 'https://www.themarginalian.org/feed/', cat: 'art' },
+  openculture:      { url: 'https://www.openculture.com/feed', cat: 'art' },
+
+  // FRONTIER SCIENCE
+  qualia_inst:      { url: 'https://qualiaresearchinstitute.org/feed', cat: 'consciousness' },
+  psyche_mag:       { url: 'https://psyche.co/feed', cat: 'consciousness' },
+  integral_life:    { url: 'https://integrallife.com/feed/', cat: 'consciousness' },
+
+
+  // COMEDY
+  onion:            { url: 'https://www.theonion.com/rss', cat: 'comedy' },
+  thedadsays:       { url: 'https://www.thebelonging.com/feed/', cat: 'comedy' },
+  avclub:           { url: 'https://www.avclub.com/rss', cat: 'comedy' },
+
+  // ART
+  artnet:           { url: 'https://news.artnet.com/feed', cat: 'art' },
+  creativeapplications: { url: 'https://www.creativeapplications.net/feed/', cat: 'art' },
+  brain_pickings2:  { url: 'https://www.themarginalian.org/feed/', cat: 'art' },
+
+  // FRONTIER SCIENCE
+  consciousness_unbound: { url: 'https://www.consciousnessunbound.com/feed', cat: 'frontier' },
+  iit_news:         { url: 'https://integratedinformationtheory.org/feed/', cat: 'frontier' },
+  mindblog:         { url: 'https://dericbownds.net/feeds/posts/default', cat: 'frontier' },
+  opentheory:       { url: 'https://www.opentheory.net/feed/', cat: 'frontier' },
+  the_brainwave:    { url: 'https://www.brainwave.news/feed', cat: 'frontier' },
+  slatestarcodex:   { url: 'https://www.astralcodexten.com/feed', cat: 'frontier' },
+  andrewgelman:     { url: 'https://statmodeling.stat.columbia.edu/feed/', cat: 'frontier' },
+
+  americana_uk:     { url: 'https://www.americanauk.com/feed/', cat: 'music' },
+  no_depression:    { url: 'https://www.nodepression.com/feed/', cat: 'music' },
+  jazz_times:       { url: 'https://jazztimes.com/feed/', cat: 'music' },
+  all_about_jazz:   { url: 'https://www.allaboutjazz.com/rss.php', cat: 'music' },
+  bluegrass_today:  { url: 'https://bluegrasstoday.com/feed/', cat: 'music' },
+  cafe_mocha:       { url: 'https://cafemocharadio.com/feed/', cat: 'music' },
 
   // HOLOMETRY
   '3b1b':           { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw', cat: 'holometry' },
@@ -401,4 +505,4 @@ export default async (req, context) => {
   return new Response(summary, { status: 200 });
 };
 
-export const config = { schedule: '* * * * *' };
+export const config = { schedule: '*/10 * * * *' };

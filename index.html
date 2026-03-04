@@ -158,11 +158,12 @@ a{color:inherit}
 <div id="app">
   <div id="hdr">
     <div style="display:flex;align-items:center;gap:10px">
-      <svg id="logo" width="26" height="26" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="12" stroke="#d4a54a" stroke-width="2.5" fill="none"/>
-        <line x1="20" y1="8" x2="20" y2="32" stroke="#d4a54a" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <svg id="logo" width="36" height="36" viewBox="0 0 40 40" fill="none">
+        <ellipse cx="20" cy="20" rx="11" ry="15" stroke="#d4a54a" stroke-width="2.2" fill="none"/>
+        <line x1="20" y1="4" x2="20" y2="36" stroke="#d4a54a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="9" y1="20" x2="31" y2="20" stroke="#d4a54a" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
-      <div><h1><span class="phi">phi</span>able</h1><div class="sub">three circles force the truth</div></div>
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:1px"><h1 style="line-height:1">&#x03C6;iable</h1><div class="sub">three circles force the truth</div></div>
     </div>
     <div style="display:flex;gap:3px;align-items:center">
       <span id="dot" class="mono" style="font-size:8px;color:#d4a54a;margin-right:4px">&#x25CB;</span>
@@ -176,7 +177,7 @@ a{color:inherit}
     <div id="fcol">
       <div id="tb">
         <div id="smartbar">
-          <input id="ui" placeholder="Search articles or paste anything to veri-phi...">
+          <input id="ui" placeholder="Search articles or paste anything to veri&#x03C6;...">
           <button id="vb" class="mono" onclick="smartAction()">&#x03C6;</button>
         </div>
         <div id="vp-row">
@@ -214,6 +215,12 @@ const CATS = [
   {id:'gaming',label:'GAMING'},
   {id:'sports',label:'SPORTS'},
   {id:'outdoors',label:'OUTDOORS'},
+  {id:'comedy',label:'COMEDY'},
+  {id:'art',label:'ART'},
+  {id:'frontier',label:'FRONTIER'},
+  {id:'comedy',label:'COMEDY'},
+  {id:'art',label:'ART'},
+  {id:'frontier',label:'FRONTIER'},
   {id:'holometry',label:'HOLOMETRY'}
 ];
 let activeCat='all';
@@ -296,6 +303,19 @@ const SRC=[
   {id:"factmag",n:"FACT Magazine",c:"#bc3a6a",cat:"music",rss:"/api/rss?src=factmag"},
   {id:"xlr8r",n:"XLR8R",c:"#3abc6a",cat:"music",rss:"/api/rss?src=xlr8r"},
   {id:"consequenceof",n:"Consequence",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=consequenceof"},
+
+  {id:"darol_anger",n:"Darol Anger",c:"#d4a54a",cat:"music",rss:"/api/rss?src=darol_anger"},
+  {id:"jesse_welles",n:"Jesse Welles",c:"#a54ad4",cat:"music",rss:"/api/rss?src=jesse_welles"},
+  {id:"mason_jennings",n:"Mason Jennings",c:"#4ad4a5",cat:"music",rss:"/api/rss?src=mason_jennings"},
+  {id:"raffi",n:"Raffi",c:"#d44a4a",cat:"music",rss:"/api/rss?src=raffi"},
+  {id:"henhouse",n:"Hen House Studios",c:"#4aa5d4",cat:"music",rss:"/api/rss?src=henhouse"},
+  {id:"americana_music",n:"Americana Music",c:"#a5d44a",cat:"music",rss:"/api/rss?src=americana_music"},
+  {id:"folk_alley",n:"Folk Alley",c:"#d4954a",cat:"music",rss:"/api/rss?src=folk_alley"},
+  {id:"old_time_herald",n:"Old Time Herald",c:"#4ad495",cat:"music",rss:"/api/rss?src=old_time_herald"},
+  {id:"jazztimes",n:"Jazz Times",c:"#954ad4",cat:"music",rss:"/api/rss?src=jazztimes"},
+  {id:"downbeat",n:"DownBeat",c:"#d4a54a",cat:"music",rss:"/api/rss?src=downbeat"},
+  {id:"nonesuch",n:"Nonesuch Records",c:"#4a4ad4",cat:"music",rss:"/api/rss?src=nonesuch"},
+  {id:"emusician",n:"Electronic Musician",c:"#4ad44a",cat:"music",rss:"/api/rss?src=emusician"},
   {id:"stereogum",n:"Stereogum",c:"#6abc3a",cat:"music",rss:"/api/rss?src=stereogum"},
   {id:"reverb",n:"Reverb",c:"#bc6a5a",cat:"music",rss:"/api/rss?src=reverb"},
   // HOBBIES
@@ -323,6 +343,7 @@ const SRC=[
   {id:"maps",n:"MAPS",c:"#7a5aac",cat:"consciousness",rss:"/api/rss?src=maps"},
   {id:"thirdwave",n:"Third Wave",c:"#8a6abc",cat:"consciousness",rss:"/api/rss?src=thirdwave"},
   {id:"chacruna",n:"Chacruna",c:"#6a9abc",cat:"consciousness",rss:"/api/rss?src=chacruna"},
+  {id:"consciousness_unbound",n:"Consciousness Unbound",c:"#bc3a6a",cat:"consciousness",rss:"/api/rss?src=consciousness_unbound"},
   {id:"neurosciencenews",n:"Neuroscience News",c:"#3a8abc",cat:"consciousness",rss:"/api/rss?src=neurosciencenews"},
   {id:"mindmatters",n:"Mind Matters",c:"#bc3a8a",cat:"consciousness",rss:"/api/rss?src=mindmatters"},
   {id:"aeon_psych",n:"Aeon",c:"#8a3abc",cat:"consciousness",rss:"/api/rss?src=aeon_psych"},
@@ -396,6 +417,132 @@ const SRC=[
   {id:"adventure_alan",n:"Adventure Alan",c:"#7a5a3a",cat:"outdoors",rss:"/api/rss?src=adventure_alan"},
   {id:"outdoors_project",n:"Outdoors Project",c:"#3a7a5a",cat:"outdoors",rss:"/api/rss?src=outdoors_project"},
   {id:"climbingnews",n:"Climbing News",c:"#8a6a5a",cat:"outdoors",rss:"/api/rss?src=climbingnews"},
+
+  // COMMUNITY MUSIC
+  {id:"darol_anger",n:"Darol Anger",c:"#bc6a8a",cat:"music",rss:"/api/rss?src=darol_anger"},
+  {id:"jessewelles",n:"Jesse Welles",c:"#8abc6a",cat:"music",rss:"/api/rss?src=jessewelles"},
+  {id:"noside_session",n:"No Side Session",c:"#6a8abc",cat:"music",rss:"/api/rss?src=noside_session"},
+  {id:"folkworks",n:"FolkWorks",c:"#bc8a3a",cat:"music",rss:"/api/rss?src=folkworks"},
+  {id:"fiddlehangout",n:"Fiddle Hangout",c:"#3abc8a",cat:"music",rss:"/api/rss?src=fiddlehangout"},
+  {id:"banjohangoout",n:"Banjo Hangout",c:"#bc3a6a",cat:"music",rss:"/api/rss?src=banjohangoout"},
+  {id:"apassion4jazz",n:"A Passion 4 Jazz",c:"#3a6abc",cat:"music",rss:"/api/rss?src=apassion4jazz"},
+  {id:"jazziz",n:"Jazziz",c:"#6abc3a",cat:"music",rss:"/api/rss?src=jazziz"},
+  {id:"allaboutjazz",n:"All About Jazz",c:"#bc9a3a",cat:"music",rss:"/api/rss?src=allaboutjazz"},
+  {id:"raffi_songs",n:"Raffi",c:"#3abc6a",cat:"music",rss:"/api/rss?src=raffi_songs"},
+  {id:"henhouse",n:"Hen House Studios",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=henhouse"},
+  {id:"masonjennings",n:"Mason Jennings",c:"#6a3abc",cat:"music",rss:"/api/rss?src=masonjennings"},
+  {id:"markoconnor",n:"Mark O'Connor",c:"#3a8abc",cat:"music",rss:"/api/rss?src=markoconnor"},
+  {id:"acmegrassroots",n:"ACME Grassroots",c:"#8a3abc",cat:"music",rss:"/api/rss?src=acmegrassroots"},
+  {id:"oldtimeparty",n:"Old Time Party",c:"#bc3a9a",cat:"music",rss:"/api/rss?src=oldtimeparty"},
+
+  // COMEDY
+  {id:"splitsider",n:"AV Club Comedy",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
+  {id:"theonion",n:"The Onion",c:"#3a8a3a",cat:"comedy",rss:"/api/rss?src=theonion"},
+  {id:"clickhole",n:"ClickHole",c:"#bc3a3a",cat:"comedy",rss:"/api/rss?src=clickhole"},
+  {id:"hardtimes",n:"The Hard Times",c:"#3a3abc",cat:"comedy",rss:"/api/rss?src=hardtimes"},
+  {id:"mcsweeney",n:"McSweeney's",c:"#bc6a6a",cat:"comedy",rss:"/api/rss?src=mcsweeney"},
+  {id:"reductress",n:"Reductress",c:"#bc3a8a",cat:"comedy",rss:"/api/rss?src=reductress"},
+  {id:"thedadsays",n:"The Belonging",c:"#8abc3a",cat:"comedy",rss:"/api/rss?src=thedadsays"},
+  {id:"chortle",n:"Chortle",c:"#6abc6a",cat:"comedy",rss:"/api/rss?src=chortle"},
+  {id:"vulture_comedy",n:"Vulture Comedy",c:"#8a3a3a",cat:"comedy",rss:"/api/rss?src=vulture_comedy"},
+  {id:"punchlinemag",n:"Punchline Mag",c:"#3abc3a",cat:"comedy",rss:"/api/rss?src=punchlinemag"},
+
+  // ART
+  {id:"hyperallergic",n:"Hyperallergic",c:"#bc3a6a",cat:"art",rss:"/api/rss?src=hyperallergic"},
+  {id:"artforum",n:"Artforum",c:"#3a3abc",cat:"art",rss:"/api/rss?src=artforum"},
+  {id:"colossal",n:"Colossal",c:"#bc6a3a",cat:"art",rss:"/api/rss?src=colossal"},
+  {id:"artnews",n:"ARTnews",c:"#3abc6a",cat:"art",rss:"/api/rss?src=artnews"},
+  {id:"designboom",n:"Designboom",c:"#6a3abc",cat:"art",rss:"/api/rss?src=designboom"},
+  {id:"it_nice_that",n:"It's Nice That",c:"#bc9a3a",cat:"art",rss:"/api/rss?src=it_nice_that"},
+  {id:"creative_bloq",n:"Creative Bloq",c:"#3a8abc",cat:"art",rss:"/api/rss?src=creative_bloq"},
+  {id:"streetartutopia",n:"Street Art Utopia",c:"#8abc3a",cat:"art",rss:"/api/rss?src=streetartutopia"},
+  {id:"ascii_art",n:"ASCII Art",c:"#8a8a8a",cat:"art",rss:"/api/rss?src=ascii_art"},
+  {id:"integrated_info",n:"IIT Lab",c:"#8abc9a",cat:"consciousness",rss:"/api/rss?src=integrated_info"},
+  {id:"publicdelivery",n:"Public Delivery",c:"#bc3a9a",cat:"art",rss:"/api/rss?src=publicdelivery"},
+
+  // FRONTIER SCIENCE
+  {id:"centerminds",n:"Center for Minds",c:"#bc6abc",cat:"consciousness",rss:"/api/rss?src=centerminds"},
+  {id:"iit_news",n:"IIT News",c:"#6a3abc",cat:"frontier",rss:"/api/rss?src=iit_news"},
+  {id:"the_brainwave",n:"The Brainwave",c:"#3abc8a",cat:"frontier",rss:"/api/rss?src=the_brainwave"},
+  {id:"qualia_research",n:"Qualia Research Inst.",c:"#6abc6a",cat:"consciousness",rss:"/api/rss?src=qualia_research"},
+  {id:"noetic_sci",n:"Noetic Sciences",c:"#bc8a6a",cat:"consciousness",rss:"/api/rss?src=noetic_sci"},
+  {id:"edge_science",n:"Edge Science",c:"#6a8abc",cat:"consciousness",rss:"/api/rss?src=edge_science"},
+  {id:"psychedelic_sci",n:"MAPS",c:"#8abc8a",cat:"consciousness",rss:"/api/rss?src=psychedelic_sci"},
+  {id:"futurism",n:"Futurism",c:"#bc3abc",cat:"consciousness",rss:"/api/rss?src=futurism"},
+  {id:"singularity_hub",n:"Singularity Hub",c:"#3abcbc",cat:"consciousness",rss:"/api/rss?src=singularity_hub"},
+  {id:"skeptic_inquiry",n:"Skeptical Inquirer",c:"#bc6a6a",cat:"consciousness",rss:"/api/rss?src=skeptic_inquiry"},
+  {id:"sci_consciousness",n:"Science of Consciousness",c:"#9a6abc",cat:"consciousness",rss:"/api/rss?src=sci_consciousness"},
+
+  // COMEDY
+  {id:"theonion",n:"The Onion",c:"#6a8a3a",cat:"comedy",rss:"/api/rss?src=theonion"},
+  {id:"splitsider",n:"AV Club Comedy",c:"#8a6a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
+  {id:"vulture_comedy",n:"Vulture Comedy",c:"#bc3a8a",cat:"comedy",rss:"/api/rss?src=vulture_comedy"},
+  {id:"chortle",n:"Chortle",c:"#3a8abc",cat:"comedy",rss:"/api/rss?src=chortle"},
+  {id:"mcsweeney",n:"McSweeney's",c:"#8a3abc",cat:"comedy",rss:"/api/rss?src=mcsweeney"},
+  {id:"reductress",n:"Reductress",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=reductress"},
+  {id:"hard_times",n:"The Hard Times",c:"#3abc8a",cat:"comedy",rss:"/api/rss?src=hard_times"},
+  {id:"nerdist_comedy",n:"Nerdist Comedy",c:"#3a3abc",cat:"comedy",rss:"/api/rss?src=nerdist_comedy"},
+  {id:"comedy_wham",n:"Comedy Wham",c:"#bc3a3a",cat:"comedy",rss:"/api/rss?src=comedy_wham"},
+
+  // ART
+  {id:"hyperallergic",n:"Hyperallergic",c:"#bc5a3a",cat:"art",rss:"/api/rss?src=hyperallergic"},
+  {id:"artforum",n:"Artforum",c:"#3a3abc",cat:"art",rss:"/api/rss?src=artforum"},
+  {id:"colossal",n:"Colossal",c:"#3abc5a",cat:"art",rss:"/api/rss?src=colossal"},
+  {id:"juxtapoz",n:"Juxtapoz",c:"#bc3a6a",cat:"art",rss:"/api/rss?src=juxtapoz"},
+  {id:"artsy",n:"Artsy",c:"#6a3abc",cat:"art",rss:"/api/rss?src=artsy"},
+  {id:"creative_bloq",n:"Creative Bloq",c:"#3a6abc",cat:"art",rss:"/api/rss?src=creative_bloq"},
+  {id:"dezeen",n:"Dezeen",c:"#bc6a3a",cat:"art",rss:"/api/rss?src=dezeen"},
+  {id:"smithsonian_art",n:"Smithsonian Arts",c:"#6abc3a",cat:"art",rss:"/api/rss?src=smithsonian_art"},
+  {id:"openculture",n:"Open Culture",c:"#3abc6a",cat:"art",rss:"/api/rss?src=openculture"},
+  {id:"brainpickings2",n:"The Marginalian",c:"#ab5a8a",cat:"art",rss:"/api/rss?src=brainpickings2"},
+
+  {id:"centerminds",n:"Center for Minds",c:"#3a8abc",cat:"consciousness",rss:"/api/rss?src=centerminds"},
+  {id:"qualia_inst",n:"Qualia Institute",c:"#8a3abc",cat:"consciousness",rss:"/api/rss?src=qualia_inst"},
+  {id:"psyche_mag",n:"Psyche Magazine",c:"#bc3a9a",cat:"consciousness",rss:"/api/rss?src=psyche_mag"},
+  {id:"integral_life",n:"Integral Life",c:"#9abc3a",cat:"consciousness",rss:"/api/rss?src=integral_life"},
+
+  // COMEDY
+  {id:"onion",n:"The Onion",c:"#8a3abc",cat:"comedy",rss:"/api/rss?src=onion"},
+  {id:"clickhole",n:"ClickHole",c:"#bc3a8a",cat:"comedy",rss:"/api/rss?src=clickhole"},
+  {id:"mcsweeney",n:"McSweeney's",c:"#3a8abc",cat:"comedy",rss:"/api/rss?src=mcsweeney"},
+  {id:"splitsider",n:"Vulture Comedy",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
+  {id:"chortle",n:"Chortle",c:"#6a3abc",cat:"comedy",rss:"/api/rss?src=chortle"},
+  {id:"avclub",n:"AV Club",c:"#3abc6a",cat:"comedy",rss:"/api/rss?src=avclub"},
+  {id:"hard_times",n:"The Hard Times",c:"#bc6a3a",cat:"comedy",rss:"/api/rss?src=hard_times"},
+  {id:"reductress",n:"Reductress",c:"#bc3a6a",cat:"comedy",rss:"/api/rss?src=reductress"},
+
+  // ART
+  {id:"hyperallergic",n:"Hyperallergic",c:"#bc3a3a",cat:"art",rss:"/api/rss?src=hyperallergic"},
+  {id:"colossal",n:"Colossal",c:"#3a6abc",cat:"art",rss:"/api/rss?src=colossal"},
+  {id:"artnet",n:"Artnet News",c:"#000000",cat:"art",rss:"/api/rss?src=artnet"},
+  {id:"creativeapplications",n:"Creative Applications",c:"#6abc3a",cat:"art",rss:"/api/rss?src=creativeapplications"},
+  {id:"designboom",n:"Designboom",c:"#3abc8a",cat:"art",rss:"/api/rss?src=designboom"},
+  {id:"it_nice_that",n:"It's Nice That",c:"#bc6abc",cat:"art",rss:"/api/rss?src=it_nice_that"},
+  {id:"juxtapoz",n:"Juxtapoz",c:"#bc8a6a",cat:"art",rss:"/api/rss?src=juxtapoz"},
+  {id:"dezeen",n:"Dezeen",c:"#3a3abc",cat:"art",rss:"/api/rss?src=dezeen"},
+  {id:"brain_pickings2",n:"The Marginalian",c:"#8a6abc",cat:"art",rss:"/api/rss?src=brain_pickings2"},
+
+  // FRONTIER SCIENCE
+  {id:"qualia_research",n:"Qualia Research Inst.",c:"#bc3a8a",cat:"frontier",rss:"/api/rss?src=qualia_research"},
+  {id:"mindblog",n:"Mind Blog",c:"#3a8abc",cat:"frontier",rss:"/api/rss?src=mindblog"},
+  {id:"opentheory",n:"Open Theory",c:"#8abc3a",cat:"frontier",rss:"/api/rss?src=opentheory"},
+  {id:"psyche_mag",n:"Psyche",c:"#6a3abc",cat:"frontier",rss:"/api/rss?src=psyche_mag"},
+  {id:"slatestarcodex",n:"Astral Codex Ten",c:"#bc6a3a",cat:"frontier",rss:"/api/rss?src=slatestarcodex"},
+  {id:"andrewgelman",n:"Andrew Gelman",c:"#3abc6a",cat:"frontier",rss:"/api/rss?src=andrewgelman"},
+
+  // COMMUNITY MUSIC
+  {id:"darol_anger",n:"Darol Anger",c:"#bc8a3a",cat:"music",rss:"/api/rss?src=darol_anger"},
+  {id:"jesse_welles",n:"Jesse Welles",c:"#3a8abc",cat:"music",rss:"/api/rss?src=jesse_welles"},
+  {id:"mason_jennings",n:"Mason Jennings",c:"#6abc3a",cat:"music",rss:"/api/rss?src=mason_jennings"},
+  {id:"americana_uk",n:"Americana UK",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=americana_uk"},
+  {id:"old_time_herald",n:"Old Time Herald",c:"#8a6a3a",cat:"music",rss:"/api/rss?src=old_time_herald"},
+  {id:"no_depression",n:"No Depression",c:"#3a6a8a",cat:"music",rss:"/api/rss?src=no_depression"},
+  {id:"jazz_times",n:"Jazz Times",c:"#3a3abc",cat:"music",rss:"/api/rss?src=jazz_times"},
+  {id:"all_about_jazz",n:"All About Jazz",c:"#bc3a6a",cat:"music",rss:"/api/rss?src=all_about_jazz"},
+  {id:"bluegrass_today",n:"Bluegrass Today",c:"#6a8a3a",cat:"music",rss:"/api/rss?src=bluegrass_today"},
+  {id:"fiddlehangout",n:"Fiddle Hangout",c:"#8a3a6a",cat:"music",rss:"/api/rss?src=fiddlehangout"},
+  {id:"cafe_mocha",n:"Café Mocha Radio",c:"#8a4a2a",cat:"music",rss:"/api/rss?src=cafe_mocha"},
+  {id:"henhouse",n:"Hen House Studios",c:"#5a6a3a",cat:"music",rss:"/api/rss?src=henhouse"},
   {id:"threeblueone",n:"3Blue1Brown",c:"#5a9abc",cat:"holometry",rss:"/api/rss?src=threeblueone"},
   {id:"vsauce",n:"Vsauce",c:"#3a6abc",cat:"holometry",rss:"/api/rss?src=vsauce"},
   {id:"veritasium2",n:"Veritasium",c:"#6abc3a",cat:"holometry",rss:"/api/rss?src=veritasium2"},
@@ -755,7 +902,7 @@ async function runVeriphi(){
   const title=input||'Document verification';
   const isURL=input.startsWith('http');
   const manualA={
-    id:'vp-'+Date.now(),ti:title,si:'veriphi',sn:'Veri-\u03C6',sc:'#d4a54a',
+    id:'vp-'+Date.now(),ti:title,si:'veriphi',sn:'Veriφ',sc:'#d4a54a',
     su:isURL?input:'',ts:Date.now(),cls:[],kv:[],qs:0,vr:0,os:0,
     thumb:null,cor:null,f4:null,ex:null,verified:false,_verifying:true
   };
@@ -824,7 +971,7 @@ function renderFeed(){
     const catName=catInfo?catInfo.label:activeCat;
     const hasSources=SRC.some(s=>s.cat===activeCat||(s.cats&&s.cats.includes(activeCat)));
     if(!hasSources){
-      el.innerHTML='<div class="no-results"><div style="font-size:16px;margin-bottom:8px">'+catName+'</div><div>Coming soon. Know a good source?</div><div style="margin-top:12px;font-size:11px;color:var(--a)">Paste any URL into the smart bar to veri-\u03C6 it now.</div></div>';
+      el.innerHTML='<div class="no-results"><div style="font-size:16px;margin-bottom:8px">'+catName+'</div><div>Coming soon. Know a good source?</div><div style="margin-top:12px;font-size:11px;color:var(--a)">Paste any URL into the smart bar to veriφ it now.</div></div>';
     }else{
       el.innerHTML='<div class="ld"><svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" stroke="#d4a54a" stroke-width="2" fill="none" stroke-dasharray="80" stroke-dashoffset="20" stroke-linecap="round"/></svg><div>Loading '+catName.toLowerCase()+'...</div></div>';
     }
@@ -836,38 +983,38 @@ function renderFeed(){
 
   if(!pool.length&&searchTerm){
     var q=searchTerm;
+    var srchHtml='';
     var verifiedMatches=articles.filter(function(a){return a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q))});
     var unverifiedMatches=articles.filter(function(a){return !a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q))});
-    html='';
     if(verifiedMatches.length){
-      html+='<div class="tier-header"><span class="tier-label tier-free">&#x2713; VERIFIED &mdash; FREE</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="free">?</button></div>';
-      html+='<div class="tier-desc">These stories have been verified by Phiable. Three independent sources forced a conclusion.</div>';
+      srchHtml+='<div class="tier-header"><span class="tier-label tier-free">&#x2713; VERIFIED &mdash; FREE</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="free">?</button></div>';
+      srchHtml+='<div class="tier-desc">These stories have been verified by Phiable. Three independent sources forced a conclusion.</div>';
       verifiedMatches.forEach(function(a){
-        html+='<div class="ac" onclick="openDet(this.dataset.id)" data-id="'+a.id+'">';
-        html+='<div class="ac-meta" style="padding:12px 0">';
-        html+='<div style="display:flex;align-items:center;gap:8px">';
-        html+='<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>';
-        html+='<span style="font-size:8px;color:var(--g)">&#x2713;</span></div>';
-        html+='<h3>'+a.ti+'</h3></div></div>';
+        srchHtml+='<div class="ac" onclick="openDet(this.dataset.id)" data-id="'+a.id+'">';
+        srchHtml+='<div class="ac-meta" style="padding:12px 0">';
+        srchHtml+='<div style="display:flex;align-items:center;gap:8px">';
+        srchHtml+='<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>';
+        srchHtml+='<span style="font-size:8px;color:var(--g)">&#x2713;</span></div>';
+        srchHtml+='<h3>'+a.ti+'</h3></div></div>';
       });
     }
     if(unverifiedMatches.length){
-      html+='<div class="tier-header" style="margin-top:16px"><span class="tier-label tier-unverified">UNVERIFIED</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="unverified">?</button></div>';
-      html+='<div class="tier-desc">These stories are in the feed but not yet verified. Verifying funds the journalists who reported them.</div>';
+      srchHtml+='<div class="tier-header" style="margin-top:16px"><span class="tier-label tier-unverified">UNVERIFIED</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="unverified">?</button></div>';
+      srchHtml+='<div class="tier-desc">These stories are in the feed but not yet verified. Verifying funds the journalists who reported them.</div>';
       unverifiedMatches.forEach(function(a){
-        html+='<div class="ac ac-unverified">';
-        html+='<div class="ac-meta" style="padding:12px 0">';
-        html+='<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>';
-        html+='<h3 style="opacity:.5">'+a.ti+'</h3></div>';
-        html+='<button class="verify-btn" onclick="event.stopPropagation();verifyById(this.dataset.id)" data-id="'+a.id+'">VERIFY &amp; FUND</button></div>';
+        srchHtml+='<div class="ac ac-unverified">';
+        srchHtml+='<div class="ac-meta" style="padding:12px 0">';
+        srchHtml+='<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>';
+        srchHtml+='<h3 style="opacity:.5">'+a.ti+'</h3></div>';
+        srchHtml+='<button class="verify-btn" onclick="event.stopPropagation();verifyById(this.dataset.id)" data-id="'+a.id+'">VERIφ &amp; FUND</button></div>';
       });
     }
     if(!verifiedMatches.length&&!unverifiedMatches.length){
-      html='<div class="tier-header"><span class="tier-label tier-unverified">UNVERIFIED</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="unverified">?</button></div>';
-      html+='<div class="tier-desc">Not in our feed yet. Verifying this funds independent journalism.</div>';
-      html+='<div class="ac ac-unverified"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:var(--a);background:rgba(212,165,74,.08)">Web Search</span><h3 style="opacity:.5">'+q+'</h3></div><button class="verify-btn" onclick="event.stopPropagation();runVeriphi()">VERIFY &amp; FUND</button></div>';
+      srchHtml='<div class="tier-header"><span class="tier-label tier-unverified">UNVERIFIED</span><button class="tier-info" onclick="showTierInfo(this.dataset.t)" data-t="unverified">?</button></div>';
+      srchHtml+='<div class="tier-desc">Not in our feed yet. Verifying this funds independent journalism.</div>';
+      srchHtml+='<div class="ac ac-unverified"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:var(--a);background:rgba(212,165,74,.08)">Web Search</span><h3 style="opacity:.5">'+q+'</h3></div><button class="verify-btn" onclick="event.stopPropagation();runVeriphi()">VERIφ &amp; FUND</button></div>';
     }
-    el.innerHTML=html;return;
+    el.innerHTML=srchHtml;return;
   }
 
   const sorted=[...pool].sort((a,b)=>b.ts-a.ts);
@@ -1055,7 +1202,7 @@ function renderSrc(){
     });
   });
 
-  html+='<div style="margin-top:24px;padding:16px;border-radius:8px;background:rgba(212,165,74,.12);font-size:13px;color:#b0a898;line-height:1.7"><div class="mono" style="font-size:10px;font-weight:700;color:var(--a);margin-bottom:8px;text-transform:uppercase">How Phiable Works</div><p style="margin:0 0 10px">Three circles force a fourth. Phiable searches three completely independent sources about every story. If all three point the same direction, the evidence forces a conclusion that no single source stated. This is based on the Descartes Circle Theorem.</p><p style="margin:0 0 10px">Tap any article to verify it. Use the smart bar to search the feed or paste anything to veri-\u03C6.</p><p style="margin:0;color:var(--a);font-weight:500">The theorem does not care about politics. It cares about closure.</p></div>'+
+  html+='<div style="margin-top:24px;padding:16px;border-radius:8px;background:rgba(212,165,74,.12);font-size:13px;color:#b0a898;line-height:1.7"><div class="mono" style="font-size:10px;font-weight:700;color:var(--a);margin-bottom:8px;text-transform:uppercase">How Phiable Works</div><p style="margin:0 0 10px">Three circles force a fourth. Phiable searches three completely independent sources about every story. If all three point the same direction, the evidence forces a conclusion that no single source stated. This is based on the Descartes Circle Theorem.</p><p style="margin:0 0 10px">Tap any article to verify it. Use the smart bar to search the feed or paste anything to veriφ.</p><p style="margin:0;color:var(--a);font-weight:500">The theorem does not care about politics. It cares about closure.</p></div>'+
     '<div style="margin-top:12px;padding:14px;border-radius:8px;background:rgba(255,235,200,.03);border:1px solid var(--bd)"><div class="mono" style="font-size:9px;color:var(--txm);line-height:1.7">Phiable is a verification tool, not a news source. It does not produce original reporting. All scores are computed algorithmically. Phiable makes no claims of fact beyond what is explicitly supported by cited sources.</div></div>';
 
   document.getElementById('src').innerHTML=html;
@@ -1233,7 +1380,7 @@ function showV(v){
     const qa=document.createElement('div');
     qa.className='qa-tray';
     qa.style.cssText='position:absolute;right:0;top:0;bottom:0;display:flex;align-items:center;gap:2px;padding-right:8px;animation:fadeUp .15s ease';
-    qa.innerHTML='<button class="qa-btn" onclick="event.stopPropagation();verifyFromQA(\''+a.id+'\')">VERIFY</button>'
+    qa.innerHTML='<button class="qa-btn" onclick="event.stopPropagation();verifyFromQA(\''+a.id+'\')">veri&#x03C6;</button>'
       +'<button class="qa-btn" onclick="event.stopPropagation();shareArticle(\''+a.id+'\')">SHARE</button>';
     card.style.position='relative';card.style.overflow='hidden';
     card.appendChild(qa);
@@ -1386,6 +1533,8 @@ function showV(v){
 // === BOOT ===
 document.getElementById('ui').addEventListener('keydown',e=>{
   if(e.key==='Enter')smartAction();
+  if(e.key==='Enter'){const v=e.target.value.trim();if(v){searchTerm=v.toLowerCase();feedPage=0;renderFeed();}return;}
+  if(e.key==='Enter'){const v=e.target.value.trim();if(v){searchTerm=v;feedPage=0;renderFeed();}return}
   if(e.key==='Escape'){searchTerm='';e.target.value='';feedPage=0;renderFeed();document.getElementById('vp-row').classList.remove('on')}
 });
 document.getElementById('ui').addEventListener('input',e=>{
