@@ -1,21 +1,19 @@
 // reset.mjs - One-time index reset endpoint
-// Hit /api/reset once to clear bad articles, then delete this file
 import { getStore } from "@netlify/blobs";
 
 export default async (req) => {
-  // Simple secret check so random people can't hit it
   const url = new URL(req.url);
-  const secret = url.searchParams.get('secret');
-  if (secret !== 'phiable-reset-2026') {
+  if (url.searchParams.get('secret') !== 'phiable-reset-2026') {
     return new Response('Forbidden', { status: 403 });
   }
-
-  const store = getStore({ name: 'phiable-articles' });
-  
-  // Wipe the index
-  await store.setJSON('_index', { articles: [], updated: new Date().toISOString() });
-  
-  return new Response(JSON.stringify({ ok: true, message: 'Index cleared. Cron will repopulate.' }), {
+  const store = getStore('articles');
+  const empty = { articles: [], updated: new Date().toISOString() };
+  await Promise.all([
+    store.setJSON('_index',   empty),
+    store.setJSON('_index_a', empty),
+    store.setJSON('_index_b', empty),
+  ]);
+  return new Response(JSON.stringify({ ok: true, message: 'All shards cleared.' }), {
     headers: { 'Content-Type': 'application/json' }
   });
 };
