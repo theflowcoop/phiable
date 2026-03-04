@@ -1,23 +1,51 @@
 #!/bin/bash
-# deploy-phiable.sh - Auto-renames phicron to force fresh Netlify deploy
-cd ~/Downloads/phiable
+# deploy-phiable.sh
+# Run this FROM inside your phiable repo folder, after copying files in manually.
+# Usage: cd ~/path/to/phiable && bash deploy-phiable.sh
 
-# Find current phicron file
-CURRENT=$(ls netlify/functions/phicron*.mjs 2>/dev/null | head -1)
-if [ -z "$CURRENT" ]; then
-  echo "No phicron file found in netlify/functions/"
+set -e
+
+# Confirm we're in the right place
+if [ ! -d "netlify/functions" ]; then
+  echo "ERROR: Run this from inside your phiable repo (netlify/functions not found here)"
+  echo "  cd ~/path/to/phiable && bash deploy-phiable.sh"
   exit 1
 fi
 
-# Extract current number (phicron.mjs=0, phicron2.mjs=2, etc.)
+echo "=== Phiable Deploy ==="
+echo "Repo: $(pwd)"
+
+# Find current phicron file
+CURRENT=$(ls netlify/functions/phicron*.mjs 2>/dev/null | sort -V | tail -1)
+if [ -z "$CURRENT" ]; then
+  echo "ERROR: No phicron*.mjs found in netlify/functions/"
+  exit 1
+fi
+
+echo "Current cron: $CURRENT"
+
+# Compute next number
 BASENAME=$(basename "$CURRENT" .mjs)
 NUM=$(echo "$BASENAME" | grep -o '[0-9]*$')
 NEXT=$((${NUM:-1} + 1))
-NEWNAME="netlify/functions/phicron${NEXT}.mjs"
+NEWFILE="netlify/functions/phicron${NEXT}.mjs"
 
-echo "Renaming $CURRENT → $NEWNAME"
-cp "$CURRENT" "$NEWNAME"
+# Rename to force Netlify to re-register the function
+cp "$CURRENT" "$NEWFILE"
 rm "$CURRENT"
+echo "✓ Renamed to phicron${NEXT}.mjs"
 
-git add -A && git commit -m "deploy phicron${NEXT}" && git push
-echo "Done. Watch for phicron${NEXT} in Netlify Functions."
+# Show what's changed
+echo ""
+echo "Files staged for deploy:"
+git status --short
+
+# Commit and push
+git add -A
+git commit -m "deploy: phicron${NEXT}"
+git push
+
+echo ""
+echo "✓ Pushed. Watch Netlify dashboard."
+echo "  After build completes, run:"
+echo "  curl 'https://phiable.netlify.app/api/reset?secret=phiable-reset-2026'"

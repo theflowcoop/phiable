@@ -161,9 +161,8 @@ a{color:inherit}
       <svg id="logo" width="36" height="36" viewBox="0 0 40 40" fill="none">
         <ellipse cx="20" cy="20" rx="11" ry="15" stroke="#d4a54a" stroke-width="2.2" fill="none"/>
         <line x1="20" y1="4" x2="20" y2="36" stroke="#d4a54a" stroke-width="2.2" stroke-linecap="round"/>
-        <line x1="9" y1="20" x2="31" y2="20" stroke="#d4a54a" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
-      <div style="display:flex;flex-direction:column;justify-content:center;gap:1px"><h1 style="line-height:1">&#x03C6;iable</h1><div class="sub">three circles force the truth</div></div>
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:1px"><h1 style="line-height:1">phiable</h1><div class="sub">three circles force the truth</div></div>
     </div>
     <div style="display:flex;gap:3px;align-items:center">
       <span id="dot" class="mono" style="font-size:8px;color:#d4a54a;margin-right:4px">&#x25CB;</span>
@@ -177,8 +176,8 @@ a{color:inherit}
     <div id="fcol">
       <div id="tb">
         <div id="smartbar">
-          <input id="ui" placeholder="Search articles or paste anything to veri&#x03C6;...">
-          <button id="vb" class="mono" onclick="smartAction()">&#x03C6;</button>
+          <input id="ui" placeholder="Search articles or paste anything to verify...">
+          <button id="vb" class="mono" onclick="smartAction()">verify</button>
         </div>
         <div id="vp-row">
           <input id="vp-q" placeholder="What do you want to find the truth about?">
@@ -187,7 +186,7 @@ a{color:inherit}
             <input type="file" id="filein" accept=".txt,.pdf,.doc,.docx,.md,.html" style="display:none" onchange="handleFile(this)">
           </label>
           <span id="fname" class="mono" style="font-size:9px;color:var(--txm);display:none"></span>
-          <button class="mono" style="font-size:10px;padding:5px 10px;border-radius:5px;border:1px solid rgba(212,165,74,.2);background:var(--ag);color:var(--a)" onclick="runVeriphi()">VERI-&#x03C6;</button>
+          <button class="mono" style="font-size:10px;padding:5px 10px;border-radius:5px;border:1px solid rgba(212,165,74,.2);background:var(--ag);color:var(--a)" onclick="runVeriphi()">VERIFY</button>
         </div>
       </div>
       <div id="fl"></div>
@@ -200,7 +199,7 @@ a{color:inherit}
 <script>
 const CVER=6;
 
-// === 12 CATEGORIES ===
+// === CATEGORIES ===
 const CATS = [
   {id:'all',label:'ALL'},
   {id:'news',label:'NEWS'},
@@ -208,20 +207,14 @@ const CATS = [
   {id:'science',label:'SCIENCE'},
   {id:'health',label:'HEALTH'},
   {id:'music',label:'MUSIC'},
+  {id:'comedy',label:'COMEDY'},
+  {id:'art',label:'ART'},
   {id:'hobbies',label:'HOBBIES'},
   {id:'consciousness',label:'CONSCIOUSNESS'},
   {id:'tech',label:'TECH'},
   {id:'finance',label:'FINANCE'},
   {id:'gaming',label:'GAMING'},
-  {id:'sports',label:'SPORTS'},
-  {id:'outdoors',label:'OUTDOORS'},
-  {id:'comedy',label:'COMEDY'},
-  {id:'art',label:'ART'},
-  {id:'frontier',label:'FRONTIER'},
-  {id:'comedy',label:'COMEDY'},
-  {id:'art',label:'ART'},
-  {id:'frontier',label:'FRONTIER'},
-  {id:'holometry',label:'HOLOMETRY'}
+  {id:'holometry',label:'HOLOMETRY'},
 ];
 let activeCat='all';
 
@@ -236,7 +229,6 @@ const CAT_COLORS={
 const SRC=[
   // NEWS
   {id:"propublica",n:"ProPublica",c:"#e8845a",cat:"news",rss:"/api/rss?src=propublica"},
-  // WIRE & BREAKING
   {id:"ap",n:"AP News",c:"#c43a3a",cat:"news",rss:"/api/rss?src=ap"},
   {id:"reuters",n:"Reuters",c:"#c45a3a",cat:"news",rss:"/api/rss?src=reuters"},
   {id:"bbc",n:"BBC News",c:"#c43a6a",cat:"news",rss:"/api/rss?src=bbc"},
@@ -244,209 +236,98 @@ const SRC=[
   {id:"guardian",n:"The Guardian",c:"#3a8a5a",cat:"news",rss:"/api/rss?src=guardian"},
   {id:"aljazeera",n:"Al Jazeera",c:"#c4a03a",cat:"news",rss:"/api/rss?src=aljazeera"},
   {id:"gnews_world",n:"Google News",c:"#4285f4",cat:"news",rss:"/api/rss?src=gnews_world"},
-  {id:"gnews_science",n:"Google Science",c:"#34a853",cat:"science",rss:"/api/rss?src=gnews_science"},
   {id:"gnews_tech",n:"Google Tech",c:"#ea4335",cat:"news",rss:"/api/rss?src=gnews_tech"},
-  {id:"gnews_health",n:"Google Health",c:"#fbbc04",cat:"health",rss:"/api/rss?src=gnews_health"},
   {id:"reddit_world",n:"r/worldnews",c:"#ff4500",cat:"news",rss:"/api/rss?src=reddit_world"},
-  {id:"reddit_science",n:"r/science",c:"#ff6534",cat:"science",rss:"/api/rss?src=reddit_science"},
-  {id:"reddit_finance",n:"r/economics",c:"#ff8534",cat:"finance",rss:"/api/rss?src=reddit_finance"},
   {id:"bellingcat",n:"Bellingcat",c:"#c46a5a",cat:"news",rss:"/api/rss?src=bellingcat"},
   {id:"intercept",n:"The Intercept",c:"#bc5a8a",cat:"news",rss:"/api/rss?src=intercept"},
   {id:"lever",n:"The Lever",c:"#d4a54a",cat:"news",rss:"/api/rss?src=lever"},
-  {id:"markup",n:"The Markup",c:"#8abc5a",cat:"news",cats:["news","tech"],rss:"/api/rss?src=markup"},
-  {id:"404media",n:"404 Media",c:"#5a9abc",cat:"news",cats:["news","tech"],rss:"/api/rss?src=404media"},
+  {id:"markup",n:"The Markup",c:"#8abc5a",cat:"news",rss:"/api/rss?src=markup"},
+  {id:"404media",n:"404 Media",c:"#5a9abc",cat:"news",rss:"/api/rss?src=404media"},
   {id:"dropsite",n:"Drop Site News",c:"#9a8abd",cat:"news",rss:"/api/rss?src=dropsite"},
   {id:"mpu",n:"More Perfect Union",c:"#6abca0",cat:"news",rss:"/api/rss?src=mpu"},
   {id:"steady",n:"Steady",c:"#4a8ebc",cat:"news",rss:"/api/rss?src=steady"},
+  // VOICES: NEWS
+  {id:"vspehar",n:"Under the Desk News",c:"#e8845a",cat:"news",rss:"/api/rss?src=vspehar"},
+  {id:"matthewcooke",n:"Matthew Cooke",c:"#bc5a3a",cat:"news",rss:"/api/rss?src=matthewcooke"},
   // NATURE
   {id:"outside",n:"Outside",c:"#4a9e7a",cat:"nature",rss:"/api/rss?src=outside"},
   {id:"trailrunner",n:"Trail Runner",c:"#6db85a",cat:"nature",rss:"/api/rss?src=trailrunner"},
   {id:"advjournal",n:"Adventure Journal",c:"#5abc8a",cat:"nature",rss:"/api/rss?src=advjournal"},
   {id:"northspore",n:"North Spore",c:"#8a6abc",cat:"nature",rss:"/api/rss?src=northspore"},
-  {id:"northspore_blog",n:"North Spore Blog",c:"#7a5aac",cat:"nature",rss:"/api/rss?src=northspore_blog"},
   {id:"stamets",n:"Fungi Perfecti",c:"#9a7ebc",cat:"nature",rss:"/api/rss?src=stamets"},
-  {id:"ffungi",n:"Fungi Foundation",c:"#6a9abc",cat:"nature",rss:"/api/rss?src=ffungi"},
   {id:"iucn",n:"IUCN",c:"#3abc3a",cat:"nature",rss:"/api/rss?src=iucn"},
   {id:"audubon",n:"Audubon",c:"#3a6abc",cat:"nature",rss:"/api/rss?src=audubon"},
   {id:"natgeo",n:"National Geographic",c:"#f5c518",cat:"nature",rss:"/api/rss?src=natgeo"},
   {id:"rewilding",n:"Rewilding Europe",c:"#3abc6a",cat:"nature",rss:"/api/rss?src=rewilding"},
-  {id:"inaturalist",n:"iNaturalist",c:"#6abc3a",cat:"nature",rss:"/api/rss?src=inaturalist"},
   {id:"allaboutbirds",n:"All About Birds",c:"#3a8abc",cat:"nature",rss:"/api/rss?src=allaboutbirds"},
-  {id:"nama",n:"NAMA",c:"#7abc6a",cat:"nature",rss:"/api/rss?src=nama"},
-  // SCIENCE
+  // SCIENCE (absorbs Frontier)
   {id:"quanta",n:"Quanta Magazine",c:"#5a9abc",cat:"science",rss:"/api/rss?src=quanta"},
+  {id:"gnews_science",n:"Google Science",c:"#34a853",cat:"science",rss:"/api/rss?src=gnews_science"},
+  {id:"reddit_science",n:"r/science",c:"#ff6534",cat:"science",rss:"/api/rss?src=reddit_science"},
   {id:"veritasium",n:"Veritasium",c:"#bc5a6a",cat:"science",rss:"/api/rss?src=veritasium"},
   {id:"spacetime",n:"PBS Space Time",c:"#5a6abc",cat:"science",rss:"/api/rss?src=spacetime"},
   {id:"sabine",n:"Sabine Hossenfelder",c:"#bc8a5a",cat:"science",rss:"/api/rss?src=sabine"},
-  {id:"toe",n:"Theory of Everything",c:"#9a5abc",cat:"science",rss:"/api/rss?src=toe"},
   {id:"carroll",n:"Sean Carroll",c:"#5abc9a",cat:"science",rss:"/api/rss?src=carroll"},
   {id:"physworld",n:"Physics World",c:"#6a8abc",cat:"science",rss:"/api/rss?src=physworld"},
   {id:"siegel",n:"Starts With a Bang",c:"#bc6a8a",cat:"science",rss:"/api/rss?src=siegel"},
+  {id:"slatestarcodex",n:"Astral Codex Ten",c:"#bc6a3a",cat:"science",rss:"/api/rss?src=slatestarcodex"},
+  {id:"andrewgelman",n:"Andrew Gelman",c:"#3abc6a",cat:"science",rss:"/api/rss?src=andrewgelman"},
+  // VOICES: SCIENCE
+  {id:"3b1b",n:"3Blue1Brown",c:"#5a9abc",cat:"science",rss:"/api/rss?src=3b1b"},
+  {id:"cgpgrey",n:"CGP Grey",c:"#6a3abc",cat:"science",rss:"/api/rss?src=cgpgrey"},
+  {id:"hankgreen",n:"Hank Green",c:"#3abc8a",cat:"science",rss:"/api/rss?src=hankgreen"},
+  {id:"tomscott",n:"Tom Scott (Lateral)",c:"#bc8a3a",cat:"science",rss:"/api/rss?src=tomscott"},
+  {id:"adamneely",n:"Adam Neely",c:"#3a8abc",cat:"science",rss:"/api/rss?src=adamneely"},
   // HEALTH
+  {id:"gnews_health",n:"Google Health",c:"#fbbc04",cat:"health",rss:"/api/rss?src=gnews_health"},
   {id:"medscape",n:"Medscape",c:"#3a7abc",cat:"health",rss:"/api/rss?src=medscape"},
   {id:"nih_news",n:"NIH News",c:"#5a3abc",cat:"health",rss:"/api/rss?src=nih_news"},
   {id:"who_news",n:"WHO News",c:"#bc3a3a",cat:"health",rss:"/api/rss?src=who_news"},
   {id:"cdc_news",n:"CDC",c:"#3abc5a",cat:"health",rss:"/api/rss?src=cdc_news"},
   {id:"nejm",n:"NEJM",c:"#bc8a3a",cat:"health",rss:"/api/rss?src=nejm"},
-  {id:"medxiv",n:"medRxiv",c:"#8a3abc",cat:"health",rss:"/api/rss?src=medxiv"},
   {id:"statnews",n:"STAT News",c:"#bc5a8a",cat:"health",rss:"/api/rss?src=statnews"},
   {id:"retraction",n:"Retraction Watch",c:"#c45c4a",cat:"health",rss:"/api/rss?src=retraction"},
+  // VOICES: HEALTH
+  {id:"huberman",n:"Huberman Lab",c:"#bc5a8a",cat:"health",rss:"/api/rss?src=huberman"},
+  {id:"peterattia",n:"Peter Attia (The Drive)",c:"#5a8abc",cat:"health",rss:"/api/rss?src=peterattia"},
+  {id:"rhondapatrick",n:"Rhonda Patrick",c:"#8abc5a",cat:"health",rss:"/api/rss?src=rhondapatrick"},
   // MUSIC
   {id:"beato",n:"Rick Beato",c:"#d4a54a",cat:"music",rss:"/api/rss?src=beato"},
   {id:"rubin",n:"Tetragrammaton",c:"#bc8a5a",cat:"music",rss:"/api/rss?src=rubin"},
-  {id:"hypebot",n:"Hypebot",c:"#e8845a",cat:"music",rss:"/api/rss?src=hypebot"},
   {id:"bandcamp",n:"Bandcamp Daily",c:"#5abcb0",cat:"music",rss:"/api/rss?src=bandcamp"},
-  {id:"dmn",n:"Digital Music News",c:"#9a8abd",cat:"music",rss:"/api/rss?src=dmn"},
-  {id:"sos",n:"Sound on Sound",c:"#6a8abc",cat:"music",rss:"/api/rss?src=sos"},
   {id:"pitchfork",n:"Pitchfork",c:"#c43a3a",cat:"music",rss:"/api/rss?src=pitchfork"},
-  {id:"residentadvisor",n:"Resident Advisor",c:"#3a3abc",cat:"music",rss:"/api/rss?src=residentadvisor"},
   {id:"factmag",n:"FACT Magazine",c:"#bc3a6a",cat:"music",rss:"/api/rss?src=factmag"},
-  {id:"xlr8r",n:"XLR8R",c:"#3abc6a",cat:"music",rss:"/api/rss?src=xlr8r"},
   {id:"consequenceof",n:"Consequence",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=consequenceof"},
-
+  {id:"stereogum",n:"Stereogum",c:"#6abc3a",cat:"music",rss:"/api/rss?src=stereogum"},
   {id:"darol_anger",n:"Darol Anger",c:"#d4a54a",cat:"music",rss:"/api/rss?src=darol_anger"},
   {id:"jesse_welles",n:"Jesse Welles",c:"#a54ad4",cat:"music",rss:"/api/rss?src=jesse_welles"},
   {id:"mason_jennings",n:"Mason Jennings",c:"#4ad4a5",cat:"music",rss:"/api/rss?src=mason_jennings"},
-  {id:"raffi",n:"Raffi",c:"#d44a4a",cat:"music",rss:"/api/rss?src=raffi"},
   {id:"henhouse",n:"Hen House Studios",c:"#4aa5d4",cat:"music",rss:"/api/rss?src=henhouse"},
-  {id:"americana_music",n:"Americana Music",c:"#a5d44a",cat:"music",rss:"/api/rss?src=americana_music"},
   {id:"folk_alley",n:"Folk Alley",c:"#d4954a",cat:"music",rss:"/api/rss?src=folk_alley"},
   {id:"old_time_herald",n:"Old Time Herald",c:"#4ad495",cat:"music",rss:"/api/rss?src=old_time_herald"},
   {id:"jazztimes",n:"Jazz Times",c:"#954ad4",cat:"music",rss:"/api/rss?src=jazztimes"},
-  {id:"downbeat",n:"DownBeat",c:"#d4a54a",cat:"music",rss:"/api/rss?src=downbeat"},
-  {id:"nonesuch",n:"Nonesuch Records",c:"#4a4ad4",cat:"music",rss:"/api/rss?src=nonesuch"},
-  {id:"emusician",n:"Electronic Musician",c:"#4ad44a",cat:"music",rss:"/api/rss?src=emusician"},
-  {id:"stereogum",n:"Stereogum",c:"#6abc3a",cat:"music",rss:"/api/rss?src=stereogum"},
-  {id:"reverb",n:"Reverb",c:"#bc6a5a",cat:"music",rss:"/api/rss?src=reverb"},
-  // HOBBIES
-  {id:"bonsaitonight",n:"Bonsai Tonight",c:"#6db85a",cat:"hobbies",rss:"/api/rss?src=bonsaitonight"},
-  {id:"bonsaiempire",n:"Bonsai Empire",c:"#4a9e7a",cat:"hobbies",rss:"/api/rss?src=bonsaiempire"},
-  {id:"herons",n:"Herons Bonsai",c:"#5abc8a",cat:"hobbies",rss:"/api/rss?src=herons"},
-  {id:"crataegus",n:"Crataegus Bonsai",c:"#7abc6a",cat:"hobbies",rss:"/api/rss?src=crataegus"},
-  {id:"electrek",n:"Electrek",c:"#5abcb0",cat:"hobbies",rss:"/api/rss?src=electrek"},
-  {id:"surronster",n:"Surronster",c:"#bc6a5a",cat:"hobbies",rss:"/api/rss?src=surronster"},
-  {id:"ebr",n:"Electric Bike Review",c:"#8abc5a",cat:"hobbies",rss:"/api/rss?src=ebr"},
-  {id:"micromob",n:"Micromobility",c:"#5a6abc",cat:"hobbies",rss:"/api/rss?src=micromob"},
-  {id:"hackaday",n:"Hackaday",c:"#3a3abc",cat:"hobbies",rss:"/api/rss?src=hackaday"},
-  {id:"instructables",n:"Instructables",c:"#bc6a3a",cat:"hobbies",rss:"/api/rss?src=instructables"},
-  {id:"makezine",n:"Make Magazine",c:"#3abc8a",cat:"hobbies",rss:"/api/rss?src=makezine"},
-  {id:"atlasobscura",n:"Atlas Obscura",c:"#8a3abc",cat:"hobbies",rss:"/api/rss?src=atlasobscura"},
-  {id:"seriouseats",n:"Serious Eats",c:"#bc3a3a",cat:"hobbies",rss:"/api/rss?src=seriouseats"},
-  {id:"woodgears",n:"Wood Gears",c:"#8a6a3a",cat:"hobbies",rss:"/api/rss?src=woodgears"},
-  {id:"ravelry",n:"Ravelry Blog",c:"#bc5a8a",cat:"hobbies",rss:"/api/rss?src=ravelry"},
-  {id:"thesprucearts",n:"Spruce Crafts",c:"#5abc8a",cat:"hobbies",rss:"/api/rss?src=thesprucearts"},
-  {id:"diy_photography",n:"DIY Photography",c:"#3a5abc",cat:"hobbies",rss:"/api/rss?src=diy_photography"},
-  {id:"analog_cafe",n:"Analog Cafe",c:"#bc8a5a",cat:"hobbies",rss:"/api/rss?src=analog_cafe"},
-  {id:"surron",n:"Sur-Ron",c:"#e8845a",cat:"hobbies",rss:"/api/rss?src=surron"},
-  // CONSCIOUSNESS
-  {id:"doubleblind",n:"DoubleBlind",c:"#9a7ebc",cat:"consciousness",rss:"/api/rss?src=doubleblind"},
-  {id:"maps",n:"MAPS",c:"#7a5aac",cat:"consciousness",rss:"/api/rss?src=maps"},
-  {id:"thirdwave",n:"Third Wave",c:"#8a6abc",cat:"consciousness",rss:"/api/rss?src=thirdwave"},
-  {id:"chacruna",n:"Chacruna",c:"#6a9abc",cat:"consciousness",rss:"/api/rss?src=chacruna"},
-  {id:"consciousness_unbound",n:"Consciousness Unbound",c:"#bc3a6a",cat:"consciousness",rss:"/api/rss?src=consciousness_unbound"},
-  {id:"neurosciencenews",n:"Neuroscience News",c:"#3a8abc",cat:"consciousness",rss:"/api/rss?src=neurosciencenews"},
-  {id:"mindmatters",n:"Mind Matters",c:"#bc3a8a",cat:"consciousness",rss:"/api/rss?src=mindmatters"},
-  {id:"aeon_psych",n:"Aeon",c:"#8a3abc",cat:"consciousness",rss:"/api/rss?src=aeon_psych"},
-  {id:"edge",n:"Edge.org",c:"#3abc8a",cat:"consciousness",rss:"/api/rss?src=edge"},
-  {id:"iep",n:"Internet Encycl. Philosophy",c:"#bc8a3a",cat:"consciousness",rss:"/api/rss?src=iep"},
-  {id:"brainpickings",n:"The Marginalian",c:"#6a3abc",cat:"consciousness",rss:"/api/rss?src=brainpickings"},
-  {id:"nautilus",n:"Nautilus",c:"#3a6abc",cat:"consciousness",rss:"/api/rss?src=nautilus"},
-  {id:"stamets_sub",n:"Paul Stamets",c:"#b896d6",cat:"consciousness",rss:"/api/rss?src=stamets_sub"},
-  // GAMING
-  {id:"minecraft",n:"Minecraft",c:"#6db85a",cat:"gaming",rss:"/api/rss?src=minecraft"},
-  {id:"xisuma",n:"Xisuma",c:"#8abc5a",cat:"gaming",rss:"/api/rss?src=xisuma"},
-  {id:"kotaku",n:"Kotaku",c:"#3a8abc",cat:"gaming",rss:"/api/rss?src=kotaku"},
-  {id:"pcgamer",n:"PC Gamer",c:"#bc3a3a",cat:"gaming",rss:"/api/rss?src=pcgamer"},
-  {id:"eurogamer",n:"Eurogamer",c:"#3abc6a",cat:"gaming",rss:"/api/rss?src=eurogamer"},
-  {id:"rockpapershotgun",n:"Rock Paper Shotgun",c:"#bc8a3a",cat:"gaming",rss:"/api/rss?src=rockpapershotgun"},
-  {id:"ign",n:"IGN",c:"#c43a3a",cat:"gaming",rss:"/api/rss?src=ign"},
-  {id:"polygon",n:"Polygon",c:"#c43a6a",cat:"gaming",rss:"/api/rss?src=polygon"},
-  {id:"destructoid",n:"Destructoid",c:"#3a5abc",cat:"gaming",rss:"/api/rss?src=destructoid"},
-  {id:"giantbomb",n:"Giant Bomb",c:"#bc5a3a",cat:"gaming",rss:"/api/rss?src=giantbomb"},
-  {id:"roblox",n:"Roblox",c:"#5a6abc",cat:"gaming",rss:"/api/rss?src=roblox"},
-  // FINANCE
-  {id:"wolfstreet",n:"Wolf Street",c:"#bcb05a",cat:"finance",rss:"/api/rss?src=wolfstreet"},
-  {id:"nakedcapitalism",n:"Naked Capitalism",c:"#b0a840",cat:"finance",rss:"/api/rss?src=nakedcapitalism"},
-  {id:"calculatedrisk",n:"Calculated Risk",c:"#c4a030",cat:"finance",rss:"/api/rss?src=calculatedrisk"},
-  {id:"opensecrets",n:"OpenSecrets",c:"#a0bc5a",cat:"finance",rss:"/api/rss?src=opensecrets"},
-  {id:"publicintegrity",n:"Public Integrity",c:"#bc8a40",cat:"finance",rss:"/api/rss?src=publicintegrity"},
-  {id:"marginalrev",n:"Marginal Revolution",c:"#c4904a",cat:"finance",rss:"/api/rss?src=marginalrev"},
-  {id:"labornotesorg",n:"Labor Notes",c:"#bc5a5a",cat:"finance",rss:"/api/rss?src=labornotesorg"},
-  {id:"epi",n:"Economic Policy Inst.",c:"#5abc8a",cat:"finance",rss:"/api/rss?src=epi"},
-  {id:"inequalityorg",n:"Inequality.org",c:"#bc6a40",cat:"finance",rss:"/api/rss?src=inequalityorg"},
-  {id:"mrmoneymustache",n:"Mr. Money Mustache",c:"#8abc5a",cat:"finance",rss:"/api/rss?src=mrmoneymustache"},
-  {id:"financialsamurai",n:"Financial Samurai",c:"#bcb05a",cat:"finance",rss:"/api/rss?src=financialsamurai"},
-  {id:"planetmoney",n:"Planet Money",c:"#5a9abc",cat:"finance",rss:"/api/rss?src=planetmoney"},
-  {id:"freakonomics",n:"Freakonomics",c:"#9a7ebc",cat:"finance",rss:"/api/rss?src=freakonomics"},
-  {id:"web3goinggreat",n:"Web3 Is Going Great",c:"#bc5a7a",cat:"finance",rss:"/api/rss?src=web3goinggreat"},
-  {id:"gaoreports",n:"GAO Reports",c:"#5a8abc",cat:"finance",rss:"/api/rss?src=gaoreports"},
-  // HOLOMETRY
-  {id:"3b1b",n:"3Blue1Brown",c:"#5a9abc",cat:"holometry",rss:"/api/rss?src=3b1b"},
-
-  // SPORTS
-  {id:"espn",n:"ESPN",c:"#d4001f",cat:"sports",rss:"/api/rss?src=espn"},
-  {id:"bbc_sport",n:"BBC Sport",c:"#c43a3a",cat:"sports",rss:"/api/rss?src=bbc_sport"},
-  {id:"theathletic",n:"The Athletic",c:"#000000",cat:"sports",rss:"/api/rss?src=theathletic"},
-  {id:"guardian_sport",n:"Guardian Sport",c:"#3a8a5a",cat:"sports",rss:"/api/rss?src=guardian_sport"},
-  {id:"skysports",n:"Sky Sports",c:"#0057a8",cat:"sports",rss:"/api/rss?src=skysports"},
-  {id:"deadspin",n:"Deadspin",c:"#bc3a3a",cat:"sports",rss:"/api/rss?src=deadspin"},
-  {id:"si",n:"Sports Illustrated",c:"#c43a6a",cat:"sports",rss:"/api/rss?src=si"},
-  {id:"bleacherreport",n:"Bleacher Report",c:"#f5a623",cat:"sports",rss:"/api/rss?src=bleacherreport"},
-  {id:"cycling_weekly",n:"Cycling Weekly",c:"#3a6abc",cat:"sports",rss:"/api/rss?src=cycling_weekly"},
-  {id:"running_magazine",n:"Runner's World",c:"#bc6a3a",cat:"sports",rss:"/api/rss?src=running_magazine"},
-  {id:"surfline",n:"Surfline",c:"#3aaabc",cat:"sports",rss:"/api/rss?src=surfline"},
-  {id:"climbing_mag",n:"Climbing",c:"#bc8a3a",cat:"sports",rss:"/api/rss?src=climbing_mag"},
-  {id:"outside_sport",n:"Outside Fitness",c:"#3abc6a",cat:"sports",rss:"/api/rss?src=outside_sport"},
-  {id:"ultiworld",n:"Ultiworld",c:"#6abc3a",cat:"sports",rss:"/api/rss?src=ultiworld"},
-  {id:"velonews",n:"VeloNews",c:"#bc3a8a",cat:"sports",rss:"/api/rss?src=velonews"},
-  {id:"swimswam",n:"SwimSwam",c:"#3a8abc",cat:"sports",rss:"/api/rss?src=swimswam"},
-
-  // OUTDOORS
-  {id:"backpacker",n:"Backpacker",c:"#5a8a3a",cat:"outdoors",rss:"/api/rss?src=backpacker"},
-  {id:"rei_blog",n:"REI Blog",c:"#3a6a3a",cat:"outdoors",rss:"/api/rss?src=rei_blog"},
-  {id:"thetrek",n:"The Trek",c:"#8a6a3a",cat:"outdoors",rss:"/api/rss?src=thetrek"},
-  {id:"halfwayanywhere",n:"Halfway Anywhere",c:"#6a8a3a",cat:"outdoors",rss:"/api/rss?src=halfwayanywhere"},
-  {id:"outsideonline2",n:"Outside Adventure",c:"#3a8a6a",cat:"outdoors",rss:"/api/rss?src=outsideonline2"},
-  {id:"bearfoottheory",n:"Bearfoot Theory",c:"#8a3a3a",cat:"outdoors",rss:"/api/rss?src=bearfoottheory"},
-  {id:"gearjunkie",n:"Gear Junkie",c:"#3a5a8a",cat:"outdoors",rss:"/api/rss?src=gearjunkie"},
-  {id:"treeline_review",n:"Treeline Review",c:"#5a3a8a",cat:"outdoors",rss:"/api/rss?src=treeline_review"},
-  {id:"atlas_obscura2",n:"Atlas Obscura",c:"#8a3a6a",cat:"outdoors",rss:"/api/rss?src=atlas_obscura2"},
-  {id:"swimming_holes",n:"Swimming Holes",c:"#3a8aaa",cat:"outdoors",rss:"/api/rss?src=swimming_holes"},
-  {id:"campsites",n:"Campsite Guide",c:"#6a5a3a",cat:"outdoors",rss:"/api/rss?src=campsites"},
-  {id:"hikingproject",n:"Hiking Project",c:"#5a7a3a",cat:"outdoors",rss:"/api/rss?src=hikingproject"},
-  {id:"adventure_alan",n:"Adventure Alan",c:"#7a5a3a",cat:"outdoors",rss:"/api/rss?src=adventure_alan"},
-  {id:"outdoors_project",n:"Outdoors Project",c:"#3a7a5a",cat:"outdoors",rss:"/api/rss?src=outdoors_project"},
-  {id:"climbingnews",n:"Climbing News",c:"#8a6a5a",cat:"outdoors",rss:"/api/rss?src=climbingnews"},
-
-  // COMMUNITY MUSIC
-  {id:"darol_anger",n:"Darol Anger",c:"#bc6a8a",cat:"music",rss:"/api/rss?src=darol_anger"},
-  {id:"jessewelles",n:"Jesse Welles",c:"#8abc6a",cat:"music",rss:"/api/rss?src=jessewelles"},
-  {id:"noside_session",n:"No Side Session",c:"#6a8abc",cat:"music",rss:"/api/rss?src=noside_session"},
-  {id:"folkworks",n:"FolkWorks",c:"#bc8a3a",cat:"music",rss:"/api/rss?src=folkworks"},
-  {id:"fiddlehangout",n:"Fiddle Hangout",c:"#3abc8a",cat:"music",rss:"/api/rss?src=fiddlehangout"},
-  {id:"banjohangoout",n:"Banjo Hangout",c:"#bc3a6a",cat:"music",rss:"/api/rss?src=banjohangoout"},
-  {id:"apassion4jazz",n:"A Passion 4 Jazz",c:"#3a6abc",cat:"music",rss:"/api/rss?src=apassion4jazz"},
-  {id:"jazziz",n:"Jazziz",c:"#6abc3a",cat:"music",rss:"/api/rss?src=jazziz"},
   {id:"allaboutjazz",n:"All About Jazz",c:"#bc9a3a",cat:"music",rss:"/api/rss?src=allaboutjazz"},
-  {id:"raffi_songs",n:"Raffi",c:"#3abc6a",cat:"music",rss:"/api/rss?src=raffi_songs"},
-  {id:"henhouse",n:"Hen House Studios",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=henhouse"},
-  {id:"masonjennings",n:"Mason Jennings",c:"#6a3abc",cat:"music",rss:"/api/rss?src=masonjennings"},
-  {id:"markoconnor",n:"Mark O'Connor",c:"#3a8abc",cat:"music",rss:"/api/rss?src=markoconnor"},
+  {id:"fiddlehangout",n:"Fiddle Hangout",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=fiddlehangout"},
   {id:"acmegrassroots",n:"ACME Grassroots",c:"#8a3abc",cat:"music",rss:"/api/rss?src=acmegrassroots"},
   {id:"oldtimeparty",n:"Old Time Party",c:"#bc3a9a",cat:"music",rss:"/api/rss?src=oldtimeparty"},
-
   // COMEDY
-  {id:"splitsider",n:"AV Club Comedy",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
   {id:"theonion",n:"The Onion",c:"#3a8a3a",cat:"comedy",rss:"/api/rss?src=theonion"},
   {id:"clickhole",n:"ClickHole",c:"#bc3a3a",cat:"comedy",rss:"/api/rss?src=clickhole"},
   {id:"hardtimes",n:"The Hard Times",c:"#3a3abc",cat:"comedy",rss:"/api/rss?src=hardtimes"},
   {id:"mcsweeney",n:"McSweeney's",c:"#bc6a6a",cat:"comedy",rss:"/api/rss?src=mcsweeney"},
   {id:"reductress",n:"Reductress",c:"#bc3a8a",cat:"comedy",rss:"/api/rss?src=reductress"},
-  {id:"thedadsays",n:"The Belonging",c:"#8abc3a",cat:"comedy",rss:"/api/rss?src=thedadsays"},
   {id:"chortle",n:"Chortle",c:"#6abc6a",cat:"comedy",rss:"/api/rss?src=chortle"},
   {id:"vulture_comedy",n:"Vulture Comedy",c:"#8a3a3a",cat:"comedy",rss:"/api/rss?src=vulture_comedy"},
-  {id:"punchlinemag",n:"Punchline Mag",c:"#3abc3a",cat:"comedy",rss:"/api/rss?src=punchlinemag"},
-
+  {id:"splitsider",n:"AV Club Comedy",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
+  // VOICES: COMEDY
+  {id:"daily_show_pod",n:"The Daily Show: Ears",c:"#3abc6a",cat:"comedy",rss:"/api/rss?src=daily_show_pod"},
+  {id:"lastweektonight",n:"Last Week Tonight",c:"#3a3abc",cat:"comedy",rss:"/api/rss?src=lastweektonight"},
+  {id:"billburr",n:"Bill Burr (MMP)",c:"#bc6a3a",cat:"comedy",rss:"/api/rss?src=billburr"},
+  {id:"office_ladies",n:"Office Ladies",c:"#8abc3a",cat:"comedy",rss:"/api/rss?src=office_ladies"},
+  {id:"snafu_edhelms",n:"SNAFU (Ed Helms)",c:"#3a8abc",cat:"comedy",rss:"/api/rss?src=snafu_edhelms"},
+  {id:"goodhang_amy",n:"Good Hang (Amy Poehler)",c:"#bc8a5a",cat:"comedy",rss:"/api/rss?src=goodhang_amy"},
+  {id:"elle_cordova",n:"Elle Cordova",c:"#d4a54a",cat:"comedy",rss:"/api/rss?src=elle_cordova"},
+  {id:"isabel_hagen",n:"Isabel Hagen",c:"#9a5abc",cat:"comedy",rss:"/api/rss?src=isabel_hagen"},
   // ART
   {id:"hyperallergic",n:"Hyperallergic",c:"#bc3a6a",cat:"art",rss:"/api/rss?src=hyperallergic"},
   {id:"artforum",n:"Artforum",c:"#3a3abc",cat:"art",rss:"/api/rss?src=artforum"},
@@ -456,105 +337,77 @@ const SRC=[
   {id:"it_nice_that",n:"It's Nice That",c:"#bc9a3a",cat:"art",rss:"/api/rss?src=it_nice_that"},
   {id:"creative_bloq",n:"Creative Bloq",c:"#3a8abc",cat:"art",rss:"/api/rss?src=creative_bloq"},
   {id:"streetartutopia",n:"Street Art Utopia",c:"#8abc3a",cat:"art",rss:"/api/rss?src=streetartutopia"},
-  {id:"ascii_art",n:"ASCII Art",c:"#8a8a8a",cat:"art",rss:"/api/rss?src=ascii_art"},
-  {id:"integrated_info",n:"IIT Lab",c:"#8abc9a",cat:"consciousness",rss:"/api/rss?src=integrated_info"},
   {id:"publicdelivery",n:"Public Delivery",c:"#bc3a9a",cat:"art",rss:"/api/rss?src=publicdelivery"},
-
-  // FRONTIER SCIENCE
-  {id:"centerminds",n:"Center for Minds",c:"#bc6abc",cat:"consciousness",rss:"/api/rss?src=centerminds"},
-  {id:"iit_news",n:"IIT News",c:"#6a3abc",cat:"frontier",rss:"/api/rss?src=iit_news"},
-  {id:"the_brainwave",n:"The Brainwave",c:"#3abc8a",cat:"frontier",rss:"/api/rss?src=the_brainwave"},
-  {id:"qualia_research",n:"Qualia Research Inst.",c:"#6abc6a",cat:"consciousness",rss:"/api/rss?src=qualia_research"},
-  {id:"noetic_sci",n:"Noetic Sciences",c:"#bc8a6a",cat:"consciousness",rss:"/api/rss?src=noetic_sci"},
-  {id:"edge_science",n:"Edge Science",c:"#6a8abc",cat:"consciousness",rss:"/api/rss?src=edge_science"},
-  {id:"psychedelic_sci",n:"MAPS",c:"#8abc8a",cat:"consciousness",rss:"/api/rss?src=psychedelic_sci"},
-  {id:"futurism",n:"Futurism",c:"#bc3abc",cat:"consciousness",rss:"/api/rss?src=futurism"},
-  {id:"singularity_hub",n:"Singularity Hub",c:"#3abcbc",cat:"consciousness",rss:"/api/rss?src=singularity_hub"},
-  {id:"skeptic_inquiry",n:"Skeptical Inquirer",c:"#bc6a6a",cat:"consciousness",rss:"/api/rss?src=skeptic_inquiry"},
-  {id:"sci_consciousness",n:"Science of Consciousness",c:"#9a6abc",cat:"consciousness",rss:"/api/rss?src=sci_consciousness"},
-
-  // COMEDY
-  {id:"theonion",n:"The Onion",c:"#6a8a3a",cat:"comedy",rss:"/api/rss?src=theonion"},
-  {id:"splitsider",n:"AV Club Comedy",c:"#8a6a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
-  {id:"vulture_comedy",n:"Vulture Comedy",c:"#bc3a8a",cat:"comedy",rss:"/api/rss?src=vulture_comedy"},
-  {id:"chortle",n:"Chortle",c:"#3a8abc",cat:"comedy",rss:"/api/rss?src=chortle"},
-  {id:"mcsweeney",n:"McSweeney's",c:"#8a3abc",cat:"comedy",rss:"/api/rss?src=mcsweeney"},
-  {id:"reductress",n:"Reductress",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=reductress"},
-  {id:"hard_times",n:"The Hard Times",c:"#3abc8a",cat:"comedy",rss:"/api/rss?src=hard_times"},
-  {id:"nerdist_comedy",n:"Nerdist Comedy",c:"#3a3abc",cat:"comedy",rss:"/api/rss?src=nerdist_comedy"},
-  {id:"comedy_wham",n:"Comedy Wham",c:"#bc3a3a",cat:"comedy",rss:"/api/rss?src=comedy_wham"},
-
-  // ART
-  {id:"hyperallergic",n:"Hyperallergic",c:"#bc5a3a",cat:"art",rss:"/api/rss?src=hyperallergic"},
-  {id:"artforum",n:"Artforum",c:"#3a3abc",cat:"art",rss:"/api/rss?src=artforum"},
-  {id:"colossal",n:"Colossal",c:"#3abc5a",cat:"art",rss:"/api/rss?src=colossal"},
-  {id:"juxtapoz",n:"Juxtapoz",c:"#bc3a6a",cat:"art",rss:"/api/rss?src=juxtapoz"},
-  {id:"artsy",n:"Artsy",c:"#6a3abc",cat:"art",rss:"/api/rss?src=artsy"},
-  {id:"creative_bloq",n:"Creative Bloq",c:"#3a6abc",cat:"art",rss:"/api/rss?src=creative_bloq"},
-  {id:"dezeen",n:"Dezeen",c:"#bc6a3a",cat:"art",rss:"/api/rss?src=dezeen"},
-  {id:"smithsonian_art",n:"Smithsonian Arts",c:"#6abc3a",cat:"art",rss:"/api/rss?src=smithsonian_art"},
   {id:"openculture",n:"Open Culture",c:"#3abc6a",cat:"art",rss:"/api/rss?src=openculture"},
-  {id:"brainpickings2",n:"The Marginalian",c:"#ab5a8a",cat:"art",rss:"/api/rss?src=brainpickings2"},
-
-  {id:"centerminds",n:"Center for Minds",c:"#3a8abc",cat:"consciousness",rss:"/api/rss?src=centerminds"},
-  {id:"qualia_inst",n:"Qualia Institute",c:"#8a3abc",cat:"consciousness",rss:"/api/rss?src=qualia_inst"},
-  {id:"psyche_mag",n:"Psyche Magazine",c:"#bc3a9a",cat:"consciousness",rss:"/api/rss?src=psyche_mag"},
-  {id:"integral_life",n:"Integral Life",c:"#9abc3a",cat:"consciousness",rss:"/api/rss?src=integral_life"},
-
-  // COMEDY
-  {id:"onion",n:"The Onion",c:"#8a3abc",cat:"comedy",rss:"/api/rss?src=onion"},
-  {id:"clickhole",n:"ClickHole",c:"#bc3a8a",cat:"comedy",rss:"/api/rss?src=clickhole"},
-  {id:"mcsweeney",n:"McSweeney's",c:"#3a8abc",cat:"comedy",rss:"/api/rss?src=mcsweeney"},
-  {id:"splitsider",n:"Vulture Comedy",c:"#bc8a3a",cat:"comedy",rss:"/api/rss?src=splitsider"},
-  {id:"chortle",n:"Chortle",c:"#6a3abc",cat:"comedy",rss:"/api/rss?src=chortle"},
-  {id:"avclub",n:"AV Club",c:"#3abc6a",cat:"comedy",rss:"/api/rss?src=avclub"},
-  {id:"hard_times",n:"The Hard Times",c:"#bc6a3a",cat:"comedy",rss:"/api/rss?src=hard_times"},
-  {id:"reductress",n:"Reductress",c:"#bc3a6a",cat:"comedy",rss:"/api/rss?src=reductress"},
-
-  // ART
-  {id:"hyperallergic",n:"Hyperallergic",c:"#bc3a3a",cat:"art",rss:"/api/rss?src=hyperallergic"},
-  {id:"colossal",n:"Colossal",c:"#3a6abc",cat:"art",rss:"/api/rss?src=colossal"},
+  {id:"brainpickings",n:"The Marginalian",c:"#6a3abc",cat:"art",rss:"/api/rss?src=brainpickings"},
   {id:"artnet",n:"Artnet News",c:"#000000",cat:"art",rss:"/api/rss?src=artnet"},
-  {id:"creativeapplications",n:"Creative Applications",c:"#6abc3a",cat:"art",rss:"/api/rss?src=creativeapplications"},
-  {id:"designboom",n:"Designboom",c:"#3abc8a",cat:"art",rss:"/api/rss?src=designboom"},
-  {id:"it_nice_that",n:"It's Nice That",c:"#bc6abc",cat:"art",rss:"/api/rss?src=it_nice_that"},
-  {id:"juxtapoz",n:"Juxtapoz",c:"#bc8a6a",cat:"art",rss:"/api/rss?src=juxtapoz"},
-  {id:"dezeen",n:"Dezeen",c:"#3a3abc",cat:"art",rss:"/api/rss?src=dezeen"},
-  {id:"brain_pickings2",n:"The Marginalian",c:"#8a6abc",cat:"art",rss:"/api/rss?src=brain_pickings2"},
-
-  // FRONTIER SCIENCE
-  {id:"qualia_research",n:"Qualia Research Inst.",c:"#bc3a8a",cat:"frontier",rss:"/api/rss?src=qualia_research"},
-  {id:"mindblog",n:"Mind Blog",c:"#3a8abc",cat:"frontier",rss:"/api/rss?src=mindblog"},
-  {id:"opentheory",n:"Open Theory",c:"#8abc3a",cat:"frontier",rss:"/api/rss?src=opentheory"},
-  {id:"psyche_mag",n:"Psyche",c:"#6a3abc",cat:"frontier",rss:"/api/rss?src=psyche_mag"},
-  {id:"slatestarcodex",n:"Astral Codex Ten",c:"#bc6a3a",cat:"frontier",rss:"/api/rss?src=slatestarcodex"},
-  {id:"andrewgelman",n:"Andrew Gelman",c:"#3abc6a",cat:"frontier",rss:"/api/rss?src=andrewgelman"},
-
-  // COMMUNITY MUSIC
-  {id:"darol_anger",n:"Darol Anger",c:"#bc8a3a",cat:"music",rss:"/api/rss?src=darol_anger"},
-  {id:"jesse_welles",n:"Jesse Welles",c:"#3a8abc",cat:"music",rss:"/api/rss?src=jesse_welles"},
-  {id:"mason_jennings",n:"Mason Jennings",c:"#6abc3a",cat:"music",rss:"/api/rss?src=mason_jennings"},
-  {id:"americana_uk",n:"Americana UK",c:"#bc6a3a",cat:"music",rss:"/api/rss?src=americana_uk"},
-  {id:"old_time_herald",n:"Old Time Herald",c:"#8a6a3a",cat:"music",rss:"/api/rss?src=old_time_herald"},
-  {id:"no_depression",n:"No Depression",c:"#3a6a8a",cat:"music",rss:"/api/rss?src=no_depression"},
-  {id:"jazz_times",n:"Jazz Times",c:"#3a3abc",cat:"music",rss:"/api/rss?src=jazz_times"},
-  {id:"all_about_jazz",n:"All About Jazz",c:"#bc3a6a",cat:"music",rss:"/api/rss?src=all_about_jazz"},
-  {id:"bluegrass_today",n:"Bluegrass Today",c:"#6a8a3a",cat:"music",rss:"/api/rss?src=bluegrass_today"},
-  {id:"fiddlehangout",n:"Fiddle Hangout",c:"#8a3a6a",cat:"music",rss:"/api/rss?src=fiddlehangout"},
-  {id:"cafe_mocha",n:"Café Mocha Radio",c:"#8a4a2a",cat:"music",rss:"/api/rss?src=cafe_mocha"},
-  {id:"henhouse",n:"Hen House Studios",c:"#5a6a3a",cat:"music",rss:"/api/rss?src=henhouse"},
-  {id:"threeblueone",n:"3Blue1Brown",c:"#5a9abc",cat:"holometry",rss:"/api/rss?src=threeblueone"},
+  {id:"juxtapoz",n:"Juxtapoz",c:"#bc3a6a",cat:"art",rss:"/api/rss?src=juxtapoz"},
+  {id:"dezeen",n:"Dezeen",c:"#bc6a3a",cat:"art",rss:"/api/rss?src=dezeen"},
+  // HOBBIES
+  {id:"bonsaitonight",n:"Bonsai Tonight",c:"#6db85a",cat:"hobbies",rss:"/api/rss?src=bonsaitonight"},
+  {id:"crataegus",n:"Crataegus Bonsai",c:"#7abc6a",cat:"hobbies",rss:"/api/rss?src=crataegus"},
+  {id:"electrek",n:"Electrek",c:"#5abcb0",cat:"hobbies",rss:"/api/rss?src=electrek"},
+  {id:"ebr",n:"Electric Bike Review",c:"#8abc5a",cat:"hobbies",rss:"/api/rss?src=ebr"},
+  {id:"hackaday",n:"Hackaday",c:"#3a3abc",cat:"hobbies",rss:"/api/rss?src=hackaday"},
+  {id:"instructables",n:"Instructables",c:"#bc6a3a",cat:"hobbies",rss:"/api/rss?src=instructables"},
+  {id:"makezine",n:"Make Magazine",c:"#3abc8a",cat:"hobbies",rss:"/api/rss?src=makezine"},
+  {id:"atlasobscura",n:"Atlas Obscura",c:"#8a3abc",cat:"hobbies",rss:"/api/rss?src=atlasobscura"},
+  {id:"seriouseats",n:"Serious Eats",c:"#bc3a3a",cat:"hobbies",rss:"/api/rss?src=seriouseats"},
+  {id:"woodgears",n:"Wood Gears",c:"#8a6a3a",cat:"hobbies",rss:"/api/rss?src=woodgears"},
+  {id:"nickofferman",n:"Nick Offerman",c:"#8a6a3a",cat:"hobbies",rss:"/api/rss?src=nickofferman"},
+  // CONSCIOUSNESS (absorbs Frontier philosophy)
+  {id:"doubleblind",n:"DoubleBlind",c:"#9a7ebc",cat:"consciousness",rss:"/api/rss?src=doubleblind"},
+  {id:"maps",n:"MAPS",c:"#7a5aac",cat:"consciousness",rss:"/api/rss?src=maps"},
+  {id:"thirdwave",n:"Third Wave",c:"#8a6abc",cat:"consciousness",rss:"/api/rss?src=thirdwave"},
+  {id:"chacruna",n:"Chacruna",c:"#6a9abc",cat:"consciousness",rss:"/api/rss?src=chacruna"},
+  {id:"neurosciencenews",n:"Neuroscience News",c:"#3a8abc",cat:"consciousness",rss:"/api/rss?src=neurosciencenews"},
+  {id:"aeon_psych",n:"Aeon",c:"#8a3abc",cat:"consciousness",rss:"/api/rss?src=aeon_psych"},
+  {id:"edge",n:"Edge.org",c:"#3abc8a",cat:"consciousness",rss:"/api/rss?src=edge"},
+  {id:"nautilus",n:"Nautilus",c:"#3a6abc",cat:"consciousness",rss:"/api/rss?src=nautilus"},
+  {id:"qualia_research",n:"Qualia Research Inst.",c:"#6abc6a",cat:"consciousness",rss:"/api/rss?src=qualia_research"},
+  {id:"centerminds",n:"Center for Minds",c:"#bc6abc",cat:"consciousness",rss:"/api/rss?src=centerminds"},
+  {id:"psyche_mag",n:"Psyche Magazine",c:"#bc3a9a",cat:"consciousness",rss:"/api/rss?src=psyche_mag"},
+  {id:"iit_news",n:"IIT News",c:"#6a3abc",cat:"consciousness",rss:"/api/rss?src=iit_news"},
+  {id:"mindblog",n:"Mind Blog",c:"#3a8abc",cat:"consciousness",rss:"/api/rss?src=mindblog"},
+  {id:"slatestar2",n:"Astral Codex Ten",c:"#bc6a3a",cat:"consciousness",rss:"/api/rss?src=slatestarcodex"},
+  // VOICES: CONSCIOUSNESS
+  {id:"soulboom",n:"Soul Boom (Rainn Wilson)",c:"#9a7ebc",cat:"consciousness",rss:"/api/rss?src=soulboom"},
+  {id:"jgl",n:"Joseph Gordon-Levitt",c:"#d4a54a",cat:"consciousness",rss:"/api/rss?src=jgl"},
+  {id:"garronnoone",n:"Garron Noone",c:"#6abc3a",cat:"consciousness",rss:"/api/rss?src=garronnoone"},
+  // TECH
+  {id:"gnews_tech2",n:"Google Tech",c:"#ea4335",cat:"tech",rss:"/api/rss?src=gnews_tech"},
+  {id:"hackernews",n:"Hacker News",c:"#ff6600",cat:"tech",rss:"/api/rss?src=hackernews"},
+  {id:"simonw",n:"Simon Willison",c:"#5abcb0",cat:"tech",rss:"/api/rss?src=simonw"},
+  {id:"benedictevans",n:"Benedict Evans",c:"#5a9abc",cat:"tech",rss:"/api/rss?src=benedictevans"},
+  {id:"stratechery",n:"Stratechery",c:"#bc6a5a",cat:"tech",rss:"/api/rss?src=stratechery"},
+  // VOICES: TECH
+  {id:"lizdev",n:"Liz the Developer",c:"#3abc8a",cat:"tech",rss:"/api/rss?src=lizdev"},
+  // FINANCE
+  {id:"reddit_finance",n:"r/economics",c:"#ff8534",cat:"finance",rss:"/api/rss?src=reddit_finance"},
+  {id:"wolfstreet",n:"Wolf Street",c:"#bcb05a",cat:"finance",rss:"/api/rss?src=wolfstreet"},
+  {id:"nakedcapitalism",n:"Naked Capitalism",c:"#b0a840",cat:"finance",rss:"/api/rss?src=nakedcapitalism"},
+  {id:"calculatedrisk",n:"Calculated Risk",c:"#c4a030",cat:"finance",rss:"/api/rss?src=calculatedrisk"},
+  {id:"opensecrets",n:"OpenSecrets",c:"#a0bc5a",cat:"finance",rss:"/api/rss?src=opensecrets"},
+  {id:"labornotesorg",n:"Labor Notes",c:"#bc5a5a",cat:"finance",rss:"/api/rss?src=labornotesorg"},
+  {id:"planetmoney",n:"Planet Money",c:"#5a9abc",cat:"finance",rss:"/api/rss?src=planetmoney"},
+  {id:"freakonomics",n:"Freakonomics",c:"#9a7ebc",cat:"finance",rss:"/api/rss?src=freakonomics"},
+  // GAMING
+  {id:"kotaku",n:"Kotaku",c:"#3a8abc",cat:"gaming",rss:"/api/rss?src=kotaku"},
+  {id:"pcgamer",n:"PC Gamer",c:"#bc3a3a",cat:"gaming",rss:"/api/rss?src=pcgamer"},
+  {id:"eurogamer",n:"Eurogamer",c:"#3abc6a",cat:"gaming",rss:"/api/rss?src=eurogamer"},
+  {id:"rockpapershotgun",n:"Rock Paper Shotgun",c:"#bc8a3a",cat:"gaming",rss:"/api/rss?src=rockpapershotgun"},
+  {id:"polygon",n:"Polygon",c:"#c43a6a",cat:"gaming",rss:"/api/rss?src=polygon"},
+  // HOLOMETRY
   {id:"vsauce",n:"Vsauce",c:"#3a6abc",cat:"holometry",rss:"/api/rss?src=vsauce"},
-  {id:"veritasium2",n:"Veritasium",c:"#6abc3a",cat:"holometry",rss:"/api/rss?src=veritasium2"},
   {id:"standupmaths",n:"Stand-up Maths",c:"#bc6a3a",cat:"holometry",rss:"/api/rss?src=standupmaths"},
   {id:"wolfram",n:"Wolfram Blog",c:"#bc3a9a",cat:"holometry",rss:"/api/rss?src=wolfram"},
   {id:"scottaaronson",n:"Scott Aaronson",c:"#9abc3a",cat:"holometry",rss:"/api/rss?src=scottaaronson"},
   {id:"johncbaez",n:"John Baez",c:"#3a9abc",cat:"holometry",rss:"/api/rss?src=johncbaez"},
   {id:"terrytao",n:"Terence Tao",c:"#bc9a3a",cat:"holometry",rss:"/api/rss?src=terrytao"},
-  {id:"lesswr",n:"LessWrong",c:"#6a3abc",cat:"holometry",rss:"/api/rss?src=lesswr"},
   {id:"numberphile",n:"Numberphile",c:"#bc8a5a",cat:"holometry",rss:"/api/rss?src=numberphile"},
   {id:"quanta_math",n:"Quanta Math",c:"#b896d6",cat:"holometry",rss:"/api/rss?src=quanta_math"},
-];
+  {id:"toe",n:"Theory of Everything",c:"#9a5abc",cat:"holometry",rss:"/api/rss?src=toe"},
+]
 
 window.verifyById=function(id){var a=articles.find(function(x){return x.id===id});if(a)verify(a)};
 // === TIER INFO ===
@@ -1380,7 +1233,7 @@ function showV(v){
     const qa=document.createElement('div');
     qa.className='qa-tray';
     qa.style.cssText='position:absolute;right:0;top:0;bottom:0;display:flex;align-items:center;gap:2px;padding-right:8px;animation:fadeUp .15s ease';
-    qa.innerHTML='<button class="qa-btn" onclick="event.stopPropagation();verifyFromQA(\''+a.id+'\')">veri&#x03C6;</button>'
+    qa.innerHTML='<button class="qa-btn" onclick="event.stopPropagation();verifyFromQA(\''+a.id+'\')">verify</button>'
       +'<button class="qa-btn" onclick="event.stopPropagation();shareArticle(\''+a.id+'\')">SHARE</button>';
     card.style.position='relative';card.style.overflow='hidden';
     card.appendChild(qa);

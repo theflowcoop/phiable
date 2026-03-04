@@ -299,8 +299,37 @@ const SOURCES = {
   scottaaronson:    { url: 'https://scottaaronson.blog/?feed=rss2', cat: 'holometry' },
   johncbaez:        { url: 'https://johncarlosbaez.wordpress.com/feed/', cat: 'holometry' },
   terrytao:         { url: 'https://terrytao.wordpress.com/feed/', cat: 'holometry' },
-  lesswr:           { url: 'https://www.lesswrong.com/feed.xml', cat: 'holometry' },
-  quanta_math:       { url: 'https://api.quantamagazine.org/feed/?tags=mathematics', cat: 'holometry' },
+  quanta_math:      { url: 'https://api.quantamagazine.org/feed/?tags=mathematics', cat: 'holometry' },
+  toe:              { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCdWIQh9DGG6uhJk8eyIFl1w', cat: 'holometry' },
+  // VOICES: NEWS
+  vspehar:          { url: 'https://underthedesknews.substack.com/feed', cat: 'news' },
+  matthewcooke:     { url: 'https://matthewcooke.substack.com/feed', cat: 'news' },
+  // VOICES: SCIENCE
+  cgpgrey:          { url: 'https://cgpgrey.substack.com/feed', cat: 'science' },
+  hankgreen:        { url: 'https://hank.substack.com/feed', cat: 'science' },
+  tomscott:         { url: 'https://feeds.acast.com/public/shows/lateral-with-tom-scott', cat: 'science' },
+  adamneely:        { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCnkp4xDOwqqJD7sSM3xdUiQ', cat: 'science' },
+  // VOICES: HEALTH
+  huberman:         { url: 'https://feeds.libsyn.com/428796/rss', cat: 'health' },
+  peterattia:       { url: 'https://feeds.libsyn.com/436255/rss', cat: 'health' },
+  rhondapatrick:    { url: 'https://feeds.libsyn.com/57636/rss', cat: 'health' },
+  // VOICES: COMEDY
+  daily_show_pod:   { url: 'https://feeds.simplecast.com/zKjsRn4B', cat: 'comedy' },
+  lastweektonight:  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3XTzVzaHQEd30rQbuvCtTQ', cat: 'comedy' },
+  billburr:         { url: 'https://billburr.libsyn.com/rss', cat: 'comedy' },
+  office_ladies:    { url: 'https://feeds.acast.com/public/shows/office-ladies', cat: 'comedy' },
+  snafu_edhelms:    { url: 'https://feeds.iheart.com/podcast/42678', cat: 'comedy' },
+  goodhang_amy:     { url: 'https://feeds.megaphone.fm/goodhang', cat: 'comedy' },
+  elle_cordova:     { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxIkOW8jlSjBkfLj3KSExQg', cat: 'comedy' },
+  isabel_hagen:     { url: 'https://isabelhagen.substack.com/feed', cat: 'comedy' },
+  // VOICES: CONSCIOUSNESS
+  soulboom:         { url: 'https://feeds.simplecast.com/jV_HNPFR', cat: 'consciousness' },
+  jgl:              { url: 'https://journal.hitrecord.org/feed', cat: 'consciousness' },
+  garronnoone:      { url: 'https://feeds.acast.com/public/shows/how-are-ye-gettin-on', cat: 'consciousness' },
+  // VOICES: HOBBIES
+  nickofferman:     { url: 'https://nickofferman.substack.com/feed', cat: 'hobbies' },
+  // VOICES: TECH
+  lizdev:           { url: 'https://lizthe.dev/feed', cat: 'tech' },
 };
 
 function withTimeout(promise, ms, label) {
