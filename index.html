@@ -140,6 +140,18 @@ a{color:inherit}
 .qa-btn{padding:8px 12px;border-radius:6px;border:none;font-size:9px;font-weight:700;letter-spacing:.1em;font-family:'DM Mono',monospace;cursor:pointer}
 .qa-btn:first-child{background:rgba(212,165,74,.2);color:var(--a)}
 .qa-btn:last-child{background:rgba(126,188,106,.15);color:var(--g)}
+/* ═══ TIER UI ═══ */
+.tier-header{display:flex;align-items:center;gap:8px;padding:12px 0 4px}
+.tier-label{font-size:9px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:6px}
+.tier-free{background:rgba(16,185,129,.15);color:#10b981}
+.tier-unverified{background:rgba(255,255,255,.06);color:var(--t3)}
+.tier-info{width:18px;height:18px;border-radius:50%;border:1px solid var(--bd);background:none;color:var(--t3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+.tier-info:hover{border-color:var(--ac);color:var(--ac)}
+.tier-desc{font-size:11px;color:var(--t3);line-height:1.5;padding-bottom:8px}
+.ac-unverified{opacity:.7;pointer-events:auto}
+.ac-unverified h3{color:var(--t2)}
+.verify-btn{flex-shrink:0;padding:6px 12px;border-radius:8px;border:1px solid var(--ac);background:none;color:var(--ac);font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;white-space:nowrap}
+.verify-btn:hover{background:var(--ac);color:#fff}
 </style>
 </head>
 <body>
@@ -272,12 +284,45 @@ const SRC=[
   {id:"minecraft",n:"Minecraft",c:"#6db85a",cat:"gaming",rss:"/api/rss?src=minecraft"},
   {id:"xisuma",n:"Xisuma",c:"#8abc5a",cat:"gaming",rss:"/api/rss?src=xisuma"},
   {id:"roblox",n:"Roblox",c:"#5a6abc",cat:"gaming",rss:"/api/rss?src=roblox"},
+  // FINANCE
+  {id:"wolfstreet",n:"Wolf Street",c:"#bcb05a",cat:"finance",rss:"/api/rss?src=wolfstreet"},
+  {id:"nakedcapitalism",n:"Naked Capitalism",c:"#b0a840",cat:"finance",rss:"/api/rss?src=nakedcapitalism"},
+  {id:"calculatedrisk",n:"Calculated Risk",c:"#c4a030",cat:"finance",rss:"/api/rss?src=calculatedrisk"},
+  {id:"opensecrets",n:"OpenSecrets",c:"#a0bc5a",cat:"finance",rss:"/api/rss?src=opensecrets"},
+  {id:"publicintegrity",n:"Public Integrity",c:"#bc8a40",cat:"finance",rss:"/api/rss?src=publicintegrity"},
+  {id:"marginalrev",n:"Marginal Revolution",c:"#c4904a",cat:"finance",rss:"/api/rss?src=marginalrev"},
+  {id:"labornotesorg",n:"Labor Notes",c:"#bc5a5a",cat:"finance",rss:"/api/rss?src=labornotesorg"},
+  {id:"epi",n:"Economic Policy Inst.",c:"#5abc8a",cat:"finance",rss:"/api/rss?src=epi"},
+  {id:"inequalityorg",n:"Inequality.org",c:"#bc6a40",cat:"finance",rss:"/api/rss?src=inequalityorg"},
+  {id:"mrmoneymustache",n:"Mr. Money Mustache",c:"#8abc5a",cat:"finance",rss:"/api/rss?src=mrmoneymustache"},
+  {id:"financialsamurai",n:"Financial Samurai",c:"#bcb05a",cat:"finance",rss:"/api/rss?src=financialsamurai"},
+  {id:"planetmoney",n:"Planet Money",c:"#5a9abc",cat:"finance",rss:"/api/rss?src=planetmoney"},
+  {id:"freakonomics",n:"Freakonomics",c:"#9a7ebc",cat:"finance",rss:"/api/rss?src=freakonomics"},
+  {id:"web3goinggreat",n:"Web3 Is Going Great",c:"#bc5a7a",cat:"finance",rss:"/api/rss?src=web3goinggreat"},
+  {id:"gaoreports",n:"GAO Reports",c:"#5a8abc",cat:"finance",rss:"/api/rss?src=gaoreports"},
   // HOLOMETRY
   {id:"3b1b",n:"3Blue1Brown",c:"#5a9abc",cat:"holometry",rss:"/api/rss?src=3b1b"},
   {id:"numberphile",n:"Numberphile",c:"#bc8a5a",cat:"holometry",rss:"/api/rss?src=numberphile"},
   {id:"quanta_math",n:"Quanta Math",c:"#b896d6",cat:"holometry",rss:"/api/rss?src=quanta_math"},
 ];
 
+// === TIER INFO ===
+window.showTierInfo=function(type){
+  const msgs={
+    free:{title:'Verified — Free',body:'These articles have been processed by Phiable's three-angle verification engine. Three independent sources were searched. Where they agreed, a conclusion was forced — like a fourth circle in the Descartes theorem. This verification was paid for by Phiable as an investment in independent journalism.'},
+    unverified:{title:'Unverified — Help Fund This Story',body:'These stories have not yet been verified. When you verify a story, a portion of the fee goes directly to the independent journalists and creators who reported it. Phiable is a marketplace where truth has value and the people who produce it get paid. Every verification funds the creator economy.'}
+  };
+  const m=msgs[type];if(!m)return;
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:24px';
+  modal.innerHTML='<div style="background:var(--s2);border-radius:16px;padding:24px;max-width:360px;width:100%">'
+    +'<div style="font-size:16px;font-weight:600;margin-bottom:12px;color:var(--t1)">'+m.title+'</div>'
+    +'<div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px">'+m.body+'</div>'
+    +'<button onclick="this.closest('div[style*=fixed]').remove()" style="width:100%;padding:12px;border-radius:12px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:600;cursor:pointer">Got it</button>'
+    +'</div>';
+  modal.onclick=e=>{if(e.target===modal)modal.remove()};
+  document.body.appendChild(modal);
+};
 const CP=["Primary documents authenticated","Financial records verified","Multiple sources corroborate","Timeline confirmed via metadata","Public records cross-referenced","Worker accounts verified","Geolocation confirmed","Technical claims verified"];
 
 // === MATH ===
@@ -306,9 +351,8 @@ function blockKey(ts){return Math.floor(ts/108e5)}
 
 // === STATE ===
 let articles=[],selA=null,view='feed',feedPage=0,ITEMS_PER_PAGE=20,searchTerm='',pendingFileText=null;
-// Backend-compatible hash key for matching pre-verified articles
 function backendKey(title,sourceId){let h=0;const s=title+'|'+sourceId+'|';for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return'v'+Math.abs(h)}
-let verifiedCache={};// backendKey -> {corridors,forced_fourth,extension}
+let verifiedCache={};
 
 // === RENDER CATEGORY TABS ===
 function renderCats(){
@@ -427,15 +471,13 @@ async function fetchRSS(src){
 // === VERIFICATION (queue + poll, never long-wait) ===
 async function verify(a,question){
   if(a.verified||a._verifying)return;
-  // Check server-side pre-verified cache first
   if(!question){
     const k=backendKey(a.ti,a.si);
     if(verifiedCache[k]){
       const c=verifiedCache[k];
       a.cor=c.corridors;a.f4=c.forced_fourth;a.ex=c.extension;a.verified=true;
       if(selA&&selA.id===a.id)renderDet(a);
-      renderFeed();
-      return;
+      renderFeed();return;
     }
   }
   a._verifying=true;
@@ -524,11 +566,10 @@ async function loadFeeds(){
           });
         });
         dedup();renderFeed();renderCats();
-        // Populate verifiedCache so RSS articles can match without re-verifying
         data.articles.forEach(pa=>{
           if(pa.corridors){const k=backendKey(pa.title,pa.sourceId||pa.source||'');verifiedCache[k]={corridors:pa.corridors,forced_fourth:pa.forced_fourth,extension:pa.extension};}
         });
-        console.log('[phi] loaded '+data.articles.length+' pre-verified from server, cache size='+Object.keys(verifiedCache).length);
+        console.log('[phi] loaded '+data.articles.length+' pre-verified, cache='+Object.keys(verifiedCache).length);
       }
     }
   }catch(e){console.log('[phi] pre-verified load fail',e)}
@@ -686,7 +727,37 @@ function renderFeed(){
     el.innerHTML='<div class="ld"><svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" stroke="#d4a54a" stroke-width="2" fill="none" stroke-dasharray="80" stroke-dashoffset="20" stroke-linecap="round"/></svg><div>Loading feeds...</div></div>';return}
 
   if(!pool.length&&searchTerm){
-    el.innerHTML='<div class="no-results"><div>No results for "'+searchTerm+'"</div><div style="margin-top:8px;font-size:11px">Try different keywords or paste a URL to veri-\u03C6</div></div>';return}
+    // Show two-tier search results: verified matches + unverified prompt
+    const q=searchTerm;
+    const verifiedMatches=articles.filter(a=>a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q)));
+    const unverifiedMatches=articles.filter(a=>!a.verified&&(a.ti.toLowerCase().includes(q)||a.sn.toLowerCase().includes(q)));
+    let html='';
+    if(verifiedMatches.length){
+      html+='<div class="tier-header"><span class="tier-label tier-free">✓ VERIFIED — FREE</span>'
+        +'<button class="tier-info" onclick="showTierInfo('free')">?</button></div>'
+        +'<div class="tier-desc">These stories have been verified by Phiable. Three independent sources forced a conclusion.</div>';
+      verifiedMatches.forEach(a=>{
+        html+='<div class="ac" onclick="openDet(''+a.id+'')"><div class="ac-meta" style="padding:12px 0"><div style="display:flex;align-items:center;gap:8px"><span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span><span style="font-size:8px;color:var(--g)">&#x2713;</span></div><h3>'+a.ti+'</h3></div></div>';
+      });
+    }
+    if(unverifiedMatches.length){
+      html+='<div class="tier-header" style="margin-top:16px"><span class="tier-label tier-unverified">UNVERIFIED</span>'
+        +'<button class="tier-info" onclick="showTierInfo('unverified')">?</button></div>'
+        +'<div class="tier-desc">These stories are in the feed but not yet verified. Verifying funds the journalists who reported them.</div>';
+      unverifiedMatches.forEach(a=>{
+        html+='<div class="ac ac-unverified"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span><h3 style="opacity:.5">'+a.ti+'</h3></div>'
+          +'<button class="verify-btn" onclick="event.stopPropagation();verify(articles.find(x=>x.id===''+a.id+''))">VERIFY & FUND</button></div>';
+      });
+    }
+    if(!verifiedMatches.length&&!unverifiedMatches.length){
+      html='<div class="tier-header"><span class="tier-label tier-unverified">UNVERIFIED</span>'
+        +'<button class="tier-info" onclick="showTierInfo('unverified')">?</button></div>'
+        +'<div class="tier-desc">Not in our feed yet. Verifying this funds independent journalism.</div>'
+        +'<div class="ac ac-unverified" onclick="document.getElementById('ui').value=''+q.replace(/'/g,"\'")+''"><div class="ac-meta" style="padding:12px 0"><span class="ac-src" style="color:var(--a);background:var(--a)14">Web Search</span><h3 style="opacity:.5">'+q+'</h3></div>'
+        +'<button class="verify-btn" onclick="event.stopPropagation();runVeriphi()">VERIFY & FUND</button></div>';
+    }
+    el.innerHTML=html;return;
+  }
 
   const sorted=[...pool].sort((a,b)=>b.ts-a.ts);
   const blocks=new Map();
