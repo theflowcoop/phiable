@@ -649,7 +649,7 @@ async function verify(a,question){
     // If cached result came back immediately
     if(res.status==='done'&&res.corridors){
       a.cor=res.corridors;a.f4=res.forced_fourth;a.ex=res.extension;a.verified=true;a._verifying=false;
-      a.qs=Math.min(a.qs+.02,.98);a.os=Math.min(a.os+.02,.98);
+      if(a.qs)a.qs=Math.min(a.qs+.02,.98);a.os=Math.min((a.os||0)+.02,.98);
       saveCache();renderFeed();if(selA&&selA.id===a.id)renderDet(a);return;
     }
     
@@ -668,7 +668,7 @@ async function verify(a,question){
           const pd=await pr.json();
           if(pd.status==='done'&&pd.corridors){
             a.cor=pd.corridors;a.f4=pd.forced_fourth;a.ex=pd.extension;a.verified=true;a._verifying=false;
-            a.qs=Math.min(a.qs+.02,.98);a.os=Math.min(a.os+.02,.98);
+            if(a.qs)a.qs=Math.min(a.qs+.02,.98);a.os=Math.min((a.os||0)+.02,.98);
             saveCache();renderFeed();if(selA&&selA.id===a.id)renderDet(a);return;
           }
         }catch(e){console.log('[phi] poll fail',e.message)}
@@ -863,7 +863,7 @@ function renderFeed(){
     // Empty category
     const catInfo=CATS.find(c=>c.id===activeCat);
     const catName=catInfo?catInfo.label:activeCat;
-    const hasSources=SRC.some(s=>s.cat===activeCat||(s.cats&&s.cats.includes(activeCat)));
+    const hasSources=true;
     if(!hasSources){
       el.innerHTML='<div class="no-results"><div style="font-size:16px;margin-bottom:8px">'+catName+'</div><div>Coming soon. Know a good source?</div><div style="margin-top:12px;font-size:11px;color:var(--a)">Paste any URL into the smart bar to veriφ it now.</div></div>';
     }else{
@@ -1085,7 +1085,7 @@ function closeDet(){
 function renderSrc(){
   // Group by category
   const catGroups={};
-  SRC.forEach(s=>{
+  (SRC||[]).forEach(s=>{
     const cat=s.cat||'other';
     if(!catGroups[cat])catGroups[cat]=[];
     catGroups[cat].push(s);
