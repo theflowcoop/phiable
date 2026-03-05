@@ -520,10 +520,7 @@ function renderCats(){
 
 function matchCat(a,catId){
   if(catId==='all')return true;
-  const src=SRC.find(s=>s.id===a.si);
-  if(!src)return false;
-  if(src.cats)return src.cats.includes(catId);
-  return src.cat===catId;
+  return a.cat===catId;
 }
 
 function setCat(id){
@@ -642,7 +639,7 @@ async function verify(a,question){
   if(selA&&selA.id===a.id)renderDet(a);
   
   try{
-    const payload={title:a.ti,source:a.sn,sourceId:a.si,url:a.su||'',cat:(SRC.find(s=>s.id===a.si)||{}).cat||'',thumb:a.thumb||''};
+    const payload={title:a.ti,source:a.sn,sourceId:a.si,url:a.su||'',cat:a.cat||'',thumb:a.thumb||''};
     if(question)payload.question=question;
     
     // POST to verify - returns instantly with cached result or queued status
@@ -708,19 +705,26 @@ async function loadFeeds(){
       const data=await r.json();
       if(data.articles&&data.articles.length){
         data.articles.forEach(pa=>{
-          const src=SRC.find(s=>s.id===pa.sourceId);
-          if(!src)return;
-          const seed=H(pa.title);
-          const base=.85+((seed%12)/100),n=4+(seed%2),cls=[];
-          for(let i=0;i<n;i++)cls.push({t:CP[(seed+i*7)%CP.length],k:base*(7+((seed+i*3)%30)/10),v:((seed+i*13)%100)<(base*100)});
-          const kv=cls.slice(0,4).map(c=>c.k),qs=cQ(kv),bl=qs*.3+base*.7,vr=cls.filter(c=>c.v).length/cls.length;
+          // Use API data directly — no SRC lookup needed for verified articles
+          const cat = pa.cat || 'news';
+          const color = CAT_COLORS[cat] || 'var(--txm)';
           articles.push({
-            id:src.id+'-'+seed,ti:pa.title,si:src.id,sn:src.n,sc:src.c,
-            su:pa.url||'',ts:pa.verified||Date.now(),cls,kv,
-            qs:Math.min(bl+.02,.98),vr,os:Math.min((bl*.6+vr*.4)+.02,.98),
-            thumb:pa.thumb||null,
-            cor:pa.corridors||null,f4:pa.forced_fourth||null,ex:pa.extension||null,
-            verified:true,_verifying:false
+            id: pa.id,
+            ti: pa.ti || pa.title,
+            si: pa.si || pa.sourceId || '',
+            sn: pa.sn || pa.source || '',
+            sc: color,
+            cat: cat,
+            subcat: pa.subcat || null,
+            su: pa.url || '',
+            ts: pa.verified || Date.now(),
+            thumb: pa.thumb || null,
+            cor: pa.corridors || null,
+            f4: pa.forced_fourth || null,
+            ex: pa.extension || null,
+            os: pa.os || 0,
+            verified: true,
+            _verifying: false
           });
         });
         dedup();renderFeed();renderCats();
@@ -939,15 +943,14 @@ function renderFeed(){
       html+='<div class="tb-hdr">'+blockLabel(item.ts)+'</div>';
     }else{
       const a=item.a;
-      const src=SRC.find(s=>s.id===a.si);
-      const catLabel=src?(src.cat||'').toUpperCase():'';
+      const catLabel=(a.cat||'').toUpperCase();
       html+='<div class="ac" onclick="openDet(\''+a.id+'\')">'
         +'<div class="ac-ph" style="background:'+a.sc+'18;color:'+a.sc+'"'
         +(a.thumb?' data-thumb="'+a.thumb.replace(/"/g,'&quot;')+'"':'')
         +'><span>'+a.sn.charAt(0)+'</span></div>'
         +'<div class="ac-meta"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
         +'<span class="ac-src" style="color:'+a.sc+';background:'+a.sc+'14">'+a.sn+'</span>'
-        +(activeCat==='all'&&catLabel?'<span class="ac-cat" style="color:'+(CAT_COLORS[src.cat]||'var(--txm)')+'">'+catLabel+'</span>':'')
+        +(activeCat==='all'&&catLabel?'<span class="ac-cat" style="color:'+(CAT_COLORS[a.cat]||'var(--txm)')+'">'+catLabel+'</span>':'')
         +'<span class="ac-time">'+ago(a.ts)+'</span>'
         +(a.verified?'<span class="mono" style="font-size:8px;color:var(--g)">&#x2713;</span>':'')
         +'</div><h3>'+a.ti+'</h3></div>'
@@ -1296,8 +1299,7 @@ function showV(v){
   // Create preview card
   function showPreview(a){
     removePreview();
-    const src=SRC.find(s=>s.id===a.si);
-    const catLabel=src?(src.cat||'').toUpperCase():'';
+    const catLabel=(a.cat||'').toUpperCase();
     previewEl=document.createElement('div');
     previewEl.style.cssText='position:fixed;bottom:20px;left:16px;right:16px;background:#1e1c19;border:1px solid rgba(255,235,200,.15);border-radius:14px;padding:16px;z-index:90;animation:fadeUp .2s ease;box-shadow:0 8px 32px rgba(0,0,0,.5)';
     let ph='<div style="font-size:9px;font-weight:700;color:'+a.sc+';text-transform:uppercase;letter-spacing:.1em;font-family:\'DM Mono\',monospace;margin-bottom:6px">'+a.sn+(catLabel?' <span style="color:var(--txm);margin-left:6px">'+catLabel+'</span>':'')+'</div>';
