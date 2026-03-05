@@ -266,7 +266,15 @@ Scoring: 0.90-1.00 perfect closure, 0.70-0.89 strong, 0.50-0.69 partial, 0.30-0.
       return JSON.parse(match[0]);
     }
     messages.push({ role: 'assistant', content: data.content });
-    const toolResults = data.content.filter(b => b.type === 'tool_use').map(b => ({ type: 'tool_result', tool_use_id: b.id, content: 'Search completed.' }));
+    const toolResults = data.content
+      .filter(b => b.type === 'tool_use')
+      .map(b => ({
+        type: 'tool_result',
+        tool_use_id: b.id,
+        content: b.type === 'tool_use' && b.name === 'web_search'
+          ? (b.output ? JSON.stringify(b.output) : 'Search returned no results.')
+          : 'Done.'
+      }));
     messages.push({ role: 'user', content: toolResults });
   }
   throw new Error('Max turns exceeded');
@@ -357,8 +365,6 @@ export default async (req, context) => {
 
   if (candidates.length === 0) {
     console.log('[cron] No new candidates found');
-    // Self-trigger after pause even if nothing to do
-    selfTrigger(req, apiKey);
     return new Response('no_candidates', { status: 200 });
   }
 
