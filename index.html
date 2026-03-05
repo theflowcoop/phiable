@@ -956,7 +956,7 @@ function renderFeed(){
         +(a.verified?'<span class="mono" style="font-size:8px;color:var(--g)">&#x2713;</span>':'')
         +'</div><h3>'+a.ti+'</h3></div>'
         +'<div class="ac-sc"><div class="ac-sn" style="color:'+sHex(a.os)+'">'+(a.os*100).toFixed(0)+'</div>'
-        +'<div class="ac-cl">'+a.cls.filter(c=>c.v).length+'/'+a.cls.length+'</div></div></div>';
+        +'<div class="ac-cl">'+(a.cor?a.cor.length+'/3':'')+'</div></div></div>';
     }
   });
   if(hasMore)html+='<div class="fl-more"><div>Scroll for more</div></div>';
@@ -1052,9 +1052,7 @@ function renderDet(a){
   h+=mkBarI('Q',a.qs,'qscore')+mkBarI('Claims',a.vr,'claims')+mkBarI('Overall',a.os,'overall');
   h+='</div></div>';
   // Claims
-  if(a.cls&&a.cls.length){
-    h+='<div class="sl">Verified Claims <span class="ib" onclick="showInfo(\'claims\')">i</span></div>';
-    a.cls.forEach(c=>{h+='<div class="clm '+(c.v?'v':'u')+'"><span style="flex-shrink:0;color:'+(c.v?'var(--g)':'var(--r)')+'">&#x25CF;</span><span>'+c.t+'</span><span class="clm-k">k = '+c.k.toFixed(2)+'</span></div>'});
+  // cls removed);
   }
   // Disclaimer
   h+='<div style="margin-top:24px;padding:14px;border-radius:8px;background:rgba(255,235,200,.03);border:1px solid var(--bd)"><div class="mono" style="font-size:9px;color:var(--txm);line-height:1.7">Phiable is a verification tool, not a news source. All scores are computed algorithmically. The Forced Fourth and By Extension represent logical inferences based on the Descartes Circle Theorem, not independent reporting. Phiable makes no accusations against any person or organization.</div></div>';
