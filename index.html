@@ -1049,7 +1049,7 @@ function renderDet(a){
   // Scores
   h+='<div class="sl">Scores <span class="ib" onclick="showInfo(\'overall\')">i</span></div>';
   h+='<div class="verd"><canvas id="dg" width="120" height="120" style="width:60px;height:60px"></canvas><div style="flex:1;display:flex;flex-direction:column;gap:6px">';
-  h+=mkBarI('Q',a.qs,'qscore')+mkBarI('Claims',a.vr,'claims')+mkBarI('Overall',a.os,'overall');
+  h+=mkBarI('Score',a.os,'qscore')+mkBarI('Closure',a.os,'qscore')+mkBarI('Overall',a.os,'overall');
   h+='</div></div>';
   // Claims
   // cls removed);
@@ -1059,7 +1059,7 @@ function renderDet(a){
 
   dc.innerHTML=h;
   const gv=document.getElementById('dg');
-  if(gv)drawG(gv,a.kv,a.qs,60);
+  if(gv)drawG(gv,a.kv||[a.os*10,a.os*9,a.os*8,a.os*7],a.os,60);
 }
 
 function mkBarI(label,sc,infoKey){
