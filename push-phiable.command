@@ -12,7 +12,7 @@ echo ""
 FAIL=0
 
 # Files that are intentional tools — they write to the store on purpose, skip them
-INTENTIONAL_TOOLS="reset.mjs restore.mjs articles.mjs config.mjs"
+INTENTIONAL_TOOLS="reset.mjs restore.mjs articles.mjs config.mjs phicron-trigger.mjs"
 
 # ── Scan all .mjs function files ─────────────────────────────
 for f in netlify/functions/*.mjs; do
