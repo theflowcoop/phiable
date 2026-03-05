@@ -204,7 +204,7 @@ a{color:inherit}
   </div>
 </div>
 <script>
-const CVER=6;
+const CVER=7;
 
 // === CATEGORIES ===
 const CATS = [
@@ -698,7 +698,8 @@ async function loadFeeds(){
   const cached=loadCache();
   if(cached&&articles.length>0){renderFeed();renderCats();document.getElementById('dot').innerHTML='&#x25CB; cached';document.getElementById('dot').style.color='var(--a)'}
 
-  // Load pre-verified articles from server first
+  // Load pre-verified articles from server — clear first to avoid stale cache
+  articles=[];
   try{
     const r=await fetch('/api/articles?limit=5000');
     if(r.ok){
