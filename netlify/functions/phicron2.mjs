@@ -44,8 +44,8 @@ const FETCH_TIMEOUT_MS   = 15000;
 const ITEMS_PER_SOURCE   = 10;
 const MAX_ARTICLES       = 5000;
 const FILL_THRESHOLD     = 5000;
-const FILL_RATE          = 50;
-const STEADY_RATE        = 5;     // Start slow, raise after quality confirmed
+const FILL_RATE          = 3;     // 60s Netlify timeout — 3 articles at ~20s each
+const STEADY_RATE        = 3;
 
 // Sub-categories per tab
 const SUBCATEGORIES = {
@@ -445,9 +445,23 @@ export default async (req, context) => {
   const toVerify = candidates.sort(() => Math.random() - 0.5).slice(0, maxThisRun);
   console.log(`[cron] ${candidates.length} candidates, verifying ${toVerify.length}`);
 
-  const newEntries = [];
+  // ── SAFETY GUARD 2: SAVE AFTER EACH ARTICLE ─────────────────────────────
+  // Save immediately after each verification — not at end of run.
+  // Netlify scheduled functions have a 60s hard timeout. If we batch saves
+  // at the end, a timeout kills all work. Saving per-article means every
+  // verified article is safe even if the function is killed mid-run.
 
-  // Verify one at a time (Sonnet + web_search is expensive — no parallel)
+  // Concurrency lock — prevent multiple instances stomping each other
+  try {
+    const lock = await withTimeout(artStore.get('_cron_lock', { type: 'json' }), BLOB_TIMEOUT_MS, 'check lock');
+    if (lock && (Date.now() - lock.ts) < 90000) {
+      console.log('[cron] Another instance running, skipping this run');
+      return new Response('locked', { status: 200 });
+    }
+  } catch(e) { /* no lock exists, fine */ }
+  await withTimeout(artStore.setJSON('_cron_lock', { ts: Date.now() }), BLOB_TIMEOUT_MS, 'set lock');
+
+  // Verify and save one at a time
   for (const article of toVerify) {
     try {
       // Fetch article body
@@ -461,10 +475,10 @@ export default async (req, context) => {
       // Verify
       const result = await verifyArticle(article, apiKey);
 
-      // Store verification
+      // Store full verification detail
       await withTimeout(verStore.setJSON(article.key, result), BLOB_TIMEOUT_MS, `store verification ${article.key}`);
 
-      newEntries.push({
+      const newEntry = {
         id: article.key,
         ti: article.title,
         si: article.sourceId,
@@ -479,11 +493,32 @@ export default async (req, context) => {
         os: result.os || 0,
         verified: Date.now(),
         deepVerified: false
-      });
+      };
 
-      verifiedIds.add(article.key);
-      stats.verified++;
-      console.log(`[cron] ✓ Verified (${Math.round((result.os||0)*100)}/100): ${article.title?.slice(0,50)}`);
+      // ── SAVE IMMEDIATELY ─────────────────────────────────────────────────
+      // Load fresh index each time to avoid race conditions
+      let currentIndex;
+      try {
+        currentIndex = await withTimeout(artStore.get('_index_a', { type: 'json' }), BLOB_TIMEOUT_MS, 'load index for save');
+      } catch(e) { currentIndex = index; }
+      if (!currentIndex) currentIndex = index;
+
+      const currentCount = currentIndex.articles.length;
+      currentIndex.articles = [newEntry, ...currentIndex.articles.filter(a => a.id !== newEntry.id)];
+      if (currentIndex.articles.length > MAX_ARTICLES) currentIndex.articles = currentIndex.articles.slice(0, MAX_ARTICLES);
+      currentIndex.updated = new Date().toISOString();
+
+      if (currentIndex.articles.length >= currentCount) {
+        await withTimeout(artStore.setJSON('_index_a', currentIndex), BLOB_TIMEOUT_MS, 'save index');
+        verifiedIds.add(article.key);
+        stats.verified++;
+        console.log(`[cron] ✓ Verified (${Math.round((result.os||0)*100)}/100): ${article.title?.slice(0,50)}`);
+        // Update our local reference
+        index = currentIndex;
+      } else {
+        console.warn(`[cron] SAFETY SKIP: save would shrink index from ${currentCount} to ${currentIndex.articles.length}`);
+      }
+      // ── END SAVE ─────────────────────────────────────────────────────────
 
     } catch(e) {
       stats.failed++;
@@ -491,27 +526,15 @@ export default async (req, context) => {
     }
   }
 
-  // ── SAFETY GUARD 2: SAVE INDEX ────────────────────────────────────────────
-  if (newEntries.length > 0) {
-    index.articles = [...newEntries, ...index.articles];
-    if (index.articles.length > MAX_ARTICLES) index.articles = index.articles.slice(0, MAX_ARTICLES);
-    index.updated = new Date().toISOString();
+  // Daily backup after all articles saved
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    await withTimeout(artStore.setJSON(`_index_backup_${today}`, index), BLOB_TIMEOUT_MS, 'backup');
+  } catch(e) { console.warn(`[cron] Backup failed (non-fatal): ${e.message}`); }
 
-    if (index.articles.length < originalCount) {
-      console.error(`[cron] SAFETY ABORT save: would write ${index.articles.length} but had ${originalCount}`);
-    } else {
-      try {
-        await withTimeout(artStore.setJSON('_index_a', index), BLOB_TIMEOUT_MS, 'save index');
-        console.log(`[cron] Saved: ${index.articles.length} total (+${newEntries.length} new)`);
-        // Daily backup
-        const today = new Date().toISOString().slice(0,10);
-        try { await withTimeout(artStore.setJSON(`_index_backup_${today}`, index), BLOB_TIMEOUT_MS, 'backup'); }
-        catch(e) { console.warn(`[cron] Backup failed (non-fatal): ${e.message}`); }
-      } catch(e) {
-        console.error(`[cron] Failed to save index: ${e.message}`);
-      }
-    }
-  }
+  // Release lock
+  try { await withTimeout(artStore.delete('_cron_lock'), BLOB_TIMEOUT_MS, 'release lock'); }
+  catch(e) { /* non-fatal */ }
   // ── END SAFETY GUARD 2 ────────────────────────────────────────────────────
 
   const summary = `[cron] Done. mode=${fillMode?'FILL':'STEADY'} fetched=${stats.fetched} paywalled=${stats.paywalled} verified=${stats.verified} failed=${stats.failed} total=${index.articles.length}`;
